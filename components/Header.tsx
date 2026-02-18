@@ -19,9 +19,9 @@ const Header: React.FC = () => {
 
         {/* Centered Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center justify-center flex-1 gap-8 font-medium text-slate-600">
-          <a href="#" className="hover:text-slate-900 transition-colors whitespace-nowrap">Rental</a>
-          <a href="#" className="hover:text-slate-900 transition-colors whitespace-nowrap">For Sale</a>
-          <a href="#" className="hover:text-slate-900 transition-colors whitespace-nowrap">Jobs</a>
+          <a href="/rentals" className="hover:text-slate-900 transition-colors whitespace-nowrap">Rental</a>
+          <a href="/for-sale" className="hover:text-slate-900 transition-colors whitespace-nowrap">For Sale</a>
+          <a href="/jobs" className="hover:text-slate-900 transition-colors whitespace-nowrap">Jobs</a>
         </nav>
 
         {/* Action Buttons */}
