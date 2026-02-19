@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import Image from 'next/image';
 import { Home, Search } from 'lucide-react';
 
 const categories = [
@@ -30,7 +29,7 @@ const Hero: React.FC = () => {
       <div 
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: "url('/images/bg.png')",
+          backgroundImage: "url('/images/heroImage.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'

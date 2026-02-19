@@ -1,8 +1,6 @@
 
 import CTASection from '@/components/CTASection';
 import FeaturedProperties from '@/components/FeaturedProperties';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import InterviewBanner from '@/components/InterviewBanner';
 import StatsSection from '@/components/StatsSection';
@@ -12,12 +10,18 @@ import React from 'react';
 
 const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      <Header />
-      <main className="pt-20">
+    <div className="flex flex-col bg-white mt-20">
+     
+   <div className="order-1">
         <Hero />
+      </div>
+        <div className="order-3 md:order-2">
         <FeaturedProperties />
+        </div>
+         <div className="order-2 md:order-3">
         <InterviewBanner />
+        </div>
+         <div className="order-5 md:order-4">
         <StaysSection city="Bangalore" />
         <StaysSection city="Kochi" />
 
@@ -26,10 +30,14 @@ const App: React.FC = () => {
                 Load More
             </button>
         </div>
+        </div>
+         <div className="order-4 md:order-5">
         <CTASection />
+        </div>
+          <div className="order-6">
         <StatsSection />
-      </main>
-      <Footer />
+      </div>
+     
     </div>
   );
 };
