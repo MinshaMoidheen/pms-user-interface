@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from 'react'
-import Header from './Header';
+import Header from '../Common/Header';
 import { Calendar, ChevronDown, } from 'lucide-react';
 import { SlidersHorizontal } from 'lucide-react';
-import Footer from './Footer';
+import Footer from '../Common/Footer';
 import PropertyCard from './PropertyCard';
 import MapView from './MapView';
 

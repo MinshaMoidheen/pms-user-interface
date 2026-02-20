@@ -31,12 +31,12 @@ const Header: React.FC = () => {
     <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-100 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
         {/* Logo */}
-        <div className="shrink-0">
+         <Link href="/" className="shrink-0 group">
           <div className="text-2xl font-bold">
-            <span className="text-slate-900">PMS</span>
-            <span className="text-slate-400 font-normal">Club</span>
+            <span className="text-slate-900 group-hover:text-blue-600 transition-colors">PMS</span>
+            <span className="text-slate-400 font-normal group-hover:text-slate-500 transition-colors">Club</span>
           </div>
-        </div>
+        </Link>
 
         {/* Centered Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center justify-center flex-1 gap-8 font-medium text-slate-600">

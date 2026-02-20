@@ -1,0 +1,141 @@
+"use client";
+
+import React, { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
+interface FilterGroupProps {
+    title: string;
+    options: { label: string; count?: number; value: string }[];
+    type?: 'checkbox' | 'radio';
+}
+
+const FilterGroup: React.FC<FilterGroupProps> = ({ title, options, type = 'checkbox' }) => {
+    const [isOpen, setIsOpen] = useState(true);
+
+    return (
+        <div className="mb-4">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center justify-between w-full mb-3 text-slate-900 font-semibold hover:text-blue-600 transition-colors"
+            >
+                <span>{title}</span>
+                {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {isOpen && (
+                <div className="space-y-2">
+                    {options.map((option, idx) => (
+                        <label key={idx} className="flex items-center group cursor-pointer">
+                            <input
+                                type={type}
+                                name={title}
+                                value={option.value}
+                                className="w-4 h-4 border-slate-300 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            />
+                            <span className="ml-2 text-slate-600 group-hover:text-slate-900 transition-colors text-sm">
+                                {option.label}
+                                {option.count && <span className="text-slate-400 text-xs ml-1">({option.count})</span>}
+                            </span>
+                        </label>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+const JobFilterSidebar: React.FC = () => {
+    return (
+        <div className="bg-white p-6 rounded-2xl border border-slate-100">
+            {/* Row 1: Experience and Salary */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+                <FilterGroup
+                    title="Experience"
+                    options={[
+                        { label: 'Freshers', value: 'freshers' },
+                        { label: '1 - 2 Years', value: '1-2' },
+                        { label: '2 - 4 Years', value: '2-4' },
+                        { label: '4 - 6 Years', value: '4-6' },
+                        { label: '6 - 8 Years', value: '6-8' },
+                        { label: '8 - 10 Years', value: '8-10' },
+                        { label: '10 - 15 Years', value: '10-15' },
+                        { label: '15+ Years', value: '15+' },
+                    ]}
+                    type="radio"
+                />
+
+                <FilterGroup
+                    title="Salary"
+                    options={[
+                        { label: '₹5000 - ₹10000', value: '5-10k' },
+                        { label: '₹10000 - ₹20000', value: '10-20k' },
+                        { label: '₹20000 - ₹50000', value: '20-50k' },
+                        { label: '₹50000 - ₹75000', value: '50-75k' },
+                        { label: '₹75000 - ₹100000', value: '75-100k' },
+                        { label: '₹1L - ₹2L', value: '1-2l' },
+                        { label: '₹2L+', value: '2l+' },
+                    ]}
+                    type="radio"
+                />
+            </div>
+
+            {/* Row 2: Job Type and Education */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+                <FilterGroup
+                    title="Job Type"
+                    options={[
+                        { label: 'All', value: 'all' },
+                        { label: 'Full Time', value: 'full-time' },
+                        { label: 'Part Time', value: 'part-time' },
+                        { label: 'Internship', value: 'internship' },
+                        { label: 'Remote', value: 'remote' },
+                        { label: 'Temporary', value: 'temporary' },
+                        { label: 'Contract Base', value: 'contract' },
+                    ]}
+                />
+
+                <FilterGroup
+                    title="Education"
+                    options={[
+                        { label: 'All', value: 'all' },
+                        { label: 'High School', value: 'high-school' },
+                        { label: 'Intermediate', value: 'intermediate' },
+                        { label: 'Graduation', value: 'graduation' },
+                        { label: 'Master Degree', value: 'master' },
+                        { label: 'Bachelor Degree', value: 'bachelor' },
+                        { label: 'PhD', value: 'phd' },
+                    ]}
+                />
+            </div>
+
+            {/* Row 3: Job Level (full width on mobile, half width on desktop) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-1">
+                    <FilterGroup
+                        title="Job Level"
+                        options={[
+                            { label: 'Entry Level', value: 'entry' },
+                            { label: 'Mid Level', value: 'mid' },
+                            { label: 'Expert Level', value: 'expert' },
+                        ]}
+                        type="radio"
+                    />
+                </div>
+                {/* Empty div for layout balance on desktop */}
+                <div className="hidden md:block"></div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-6 pt-4 border-t border-slate-100">
+                <button className="flex-1 bg-blue-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                    Apply Filters
+                </button>
+                <button className="flex-1 bg-slate-100 text-slate-700 py-2.5 px-4 rounded-lg font-medium hover:bg-slate-200 transition-colors">
+                    Clear All
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export default JobFilterSidebar;

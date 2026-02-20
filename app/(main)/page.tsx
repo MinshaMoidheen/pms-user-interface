@@ -1,10 +1,10 @@
 
-import CTASection from '@/components/CTASection';
-import FeaturedProperties from '@/components/FeaturedProperties';
-import Hero from '@/components/Hero';
-import InterviewBanner from '@/components/InterviewBanner';
-import StatsSection from '@/components/StatsSection';
-import StaysSection from '@/components/StaysSection';
+import CTASection from '@/components/Landing-page/CTASection';
+import FeaturedProperties from '@/components/Landing-page/FeaturedProperties';
+import Hero from '@/components/Landing-page/Hero';
+import InterviewBanner from '@/components/Landing-page/InterviewBanner';
+import StatsSection from '@/components/Landing-page/StatsSection';
+import StaysSection from '@/components/Landing-page/StaysSection';
 import React from 'react';
 
 
