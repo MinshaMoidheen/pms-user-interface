@@ -2,11 +2,19 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X, User } from "lucide-react";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const pathname = usePathname();
+
+  const navLinks = [
+    { name: "Rental", href: "/rentals" },
+    { name: "For Sale", href: "/for-sale" },
+    { name: "Jobs", href: "/jobs" },
+  ];
 
   React.useEffect(() => {
     const checkAuth = () => {
@@ -31,7 +39,7 @@ const Header: React.FC = () => {
     <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-100 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
         {/* Logo */}
-         <Link href="/" className="shrink-0 group">
+        <Link href="/" className="shrink-0 group">
           <div className="text-2xl font-bold">
             <span className="text-slate-900 group-hover:text-blue-600 transition-colors">PMS</span>
             <span className="text-slate-400 font-normal group-hover:text-slate-500 transition-colors">Club</span>
@@ -40,24 +48,18 @@ const Header: React.FC = () => {
 
         {/* Centered Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center justify-center flex-1 gap-8 font-medium text-slate-600">
-          <a
-            href="/rentals"
-            className="hover:text-slate-900 transition-colors whitespace-nowrap"
-          >
-            Rental
-          </a>
-          <a
-            href="/for-sale"
-            className="hover:text-slate-900 transition-colors whitespace-nowrap"
-          >
-            For Sale
-          </a>
-          <a
-            href="/jobs"
-            className="hover:text-slate-900 transition-colors whitespace-nowrap"
-          >
-            Jobs
-          </a>
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={`px-4 py-2 rounded-full transition-colors whitespace-nowrap ${pathname === link.href
+                ? "bg-blue-600 text-white"
+                : "hover:text-slate-900"
+                }`}
+            >
+              {link.name}
+            </Link>
+          ))}
         </nav>
 
         {/* Action Buttons */}
@@ -103,15 +105,19 @@ const Header: React.FC = () => {
         <div className="md:hidden bg-white border-t border-slate-100 py-4 px-4">
           {/* Mobile Navigation */}
           <nav className="flex flex-col gap-4 font-medium text-slate-600 mb-4">
-            <a href="#" className="hover:text-slate-900 transition-colors py-2">
-              Rental
-            </a>
-            <a href="#" className="hover:text-slate-900 transition-colors py-2">
-              For Sale
-            </a>
-            <a href="#" className="hover:text-slate-900 transition-colors py-2">
-              Jobs
-            </a>
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`px-4 py-2 rounded-2xl transition-colors whitespace-nowrap ${pathname === link.href
+                  ? "bg-blue-600 text-white"
+                  : "hover:text-slate-900"
+                  }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
           </nav>
 
           {/* Mobile Action Buttons */}
