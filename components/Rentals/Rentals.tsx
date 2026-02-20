@@ -1,86 +1,60 @@
 "use client";
 
-import React, { useState } from 'react'
-import Header from '../Common/Header';
-import { Calendar, ChevronDown, } from 'lucide-react';
-import { SlidersHorizontal } from 'lucide-react';
-import Footer from '../Common/Footer';
-import PropertyCard from './PropertyCard';
-import MapView from './MapView';
+import React, { useState } from "react";
+import Header from "../Common/Header";
+import {
+  Calendar,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+} from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
+import Footer from "../Common/Footer";
+import PropertyCard from "./PropertyCard";
+import MapView from "./MapView";
+import {
+  GetPropertiesParams,
+  useGetPropertiesQuery,
+} from "@/store/services/propertiesApiSlice";
 
 const Rentals = () => {
- const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
 
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(6);
+  const [search, setSearch] = useState("");
+  const [type, setType] = useState<GetPropertiesParams["type"]>("RENT");
+  const [category, setCategory] =
+    useState<GetPropertiesParams["category"]>(undefined);
+  const [filterCity, setFilterCity] =
+    useState<GetPropertiesParams["city"]>("Bangalore");
 
- const PROPERTIES = [
-  {
-    id: '1',
-    title: 'Studio room in Bommanahalli',
-    description: 'Cozy Studio Apartment 4 @ Hole in the Wall Cafe',
-    price: 5900,
-    currency: '₹',
-    discount: '25% OFF!',
-    dates: 'Feb 14 - 15',
-    rating: 5,
-    reviews: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800',
-    lat: 40.7300,
-    lng: -73.8650
-  },
-  {
-    id: '2',
-    title: 'Studio room in Bommanahalli',
-    description: 'Cozy Studio Apartment 4 @ Hole in the Wall Cafe',
-    price: 5900,
-    currency: '₹',
-    discount: '25% OFF!',
-    dates: 'Feb 14 - 15',
-    rating: 5,
-    reviews: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=800',
-    lat: 40.7350,
-    lng: -73.8600
-  },
-  {
-    id: '3',
-    title: 'Premium Suite near HSR',
-    description: 'Luxury Living with panoramic views of the city',
-    price: 7500,
-    currency: '₹',
-    dates: 'Feb 16 - 18',
-    rating: 4.8,
-    reviews: 12,
-    imageUrl: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=800',
-    lat: 40.7250,
-    lng: -73.8750
-  },
-  {
-    id: '4',
-    title: 'Modern Loft in Koramangala',
-    description: 'Stylish urban retreat in the heart of the action',
-    price: 5400,
-    currency: '₹',
-    dates: 'Feb 20 - 22',
-    rating: 5,
-    reviews: 42,
-    imageUrl: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&q=80&w=800',
-    lat: 40.7380,
-    lng: -73.8850
-  }
-];
+  const params: GetPropertiesParams = {
+    page: page + 1,
+    limit,
+    ...(search && { search }),
+    ...(type && { type }),
+    ...(category && { category }),
+    ...(filterCity && { city: filterCity }),
+  };
 
+  const { data, isLoading, isError, error } = useGetPropertiesQuery(params);
+
+  const PROPERTIES = data?.data?.properties ?? [];
+  const pagination = data?.data?.pagination;
+  const total = pagination?.total ?? 0;
+  const totalPages = pagination?.totalPages ?? 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-  
-
       <main className="grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12 mt-14">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div className="space-y-2">
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-              287 Places in <br className="md:hidden" /> 
-              Bangalore, Karnataka
+              {total} Places in <br className="md:hidden" /> 
+              {filterCity}, Karnataka
             </h1>
             <p className="text-gray-500 font-medium">
               Easily book site visits and search properties quickly.
@@ -94,8 +68,12 @@ const Rentals = () => {
             <div className="flex items-center gap-3 px-6 py-3 bg-[#F8FAFC] rounded-full cursor-pointer hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
               <Calendar size={18} className="text-gray-500" />
               <div className="flex flex-col -space-y-1">
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Date</span>
-                <span className="text-sm font-bold text-gray-900">May 23 - June 15</span>
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                  Date
+                </span>
+                <span className="text-sm font-bold text-gray-900">
+                  May 23 - June 15
+                </span>
               </div>
               <ChevronDown size={18} className="text-gray-500 ml-2" />
             </div>
@@ -106,15 +84,84 @@ const Rentals = () => {
         <div className="flex flex-col lg:flex-row gap-8 min-h-[600px]">
           {/* Properties List */}
           <div className="w-full lg:w-1/2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-10">
-              {PROPERTIES.map(property => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
-              {/* Duplicate for demo filling */}
-              {PROPERTIES.slice(0, 2).map(property => (
-                <PropertyCard key={`${property.id}-dup`} property={property} />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center h-[400px] text-gray-500 gap-3">
+                <Loader2 className="animate-spin" size={40} />
+                <p className="font-medium text-lg">
+                  Finding the best places for you...
+                </p>
+              </div>
+            ) : isError ? (
+              <div className="flex flex-col items-center justify-center h-[400px] text-red-500 text-center gap-4">
+                <p className="font-bold text-xl text-gray-900">
+                  Oops! Something went wrong.
+                </p>
+                <p className="text-gray-500 max-w-xs capitalize">
+                  {(error as any)?.data?.message ||
+                    "Failed to load properties. Please try again later."}
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-6 py-2 bg-[#FF5A3C] text-white rounded-full font-bold shadow-lg shadow-orange-200"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : PROPERTIES.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 text-center">
+                <p className="font-bold text-xl text-gray-900 mb-2">
+                  No properties found
+                </p>
+                <p>Try adjusting your filters or search terms</p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-10">
+                  {PROPERTIES.map((property) => (
+                    <PropertyCard key={property._id} property={property} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-16 border-t border-gray-100 pt-10">
+                    <button
+                      onClick={() => setPage((p) => Math.max(0, p - 1))}
+                      disabled={page === 0}
+                      className="p-2.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {[...Array(totalPages)].map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setPage(i)}
+                          className={`w-10 h-10 rounded-full font-bold transition-all ${
+                            page === i
+                              ? "bg-gray-900 text-white shadow-md"
+                              : "text-gray-600 hover:bg-gray-100"
+                          }`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages - 1, p + 1))
+                      }
+                      disabled={page === totalPages - 1}
+                      className="p-2.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {/* Map View */}
@@ -126,11 +173,8 @@ const Rentals = () => {
         {/* Mobile-only section spacer to prevent bottom nav overlap */}
         <div className="h-24 md:hidden" />
       </main>
-
-     
     </div>
   );
 };
 
-
-export default Rentals
+export default Rentals;
