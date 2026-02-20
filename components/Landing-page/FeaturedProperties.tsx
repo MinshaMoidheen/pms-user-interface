@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Star,
   MapPin,
@@ -15,7 +16,7 @@ import {
   ChevronRight,
   Ruler,
 } from "lucide-react";
-import Link from 'next/link';
+import Link from "next/link";
 import {
   GetPropertiesParams,
   useGetPropertiesQuery,
@@ -23,6 +24,7 @@ import {
 import { IProperty } from "@/types/properties";
 
 const FeaturedProperties: React.FC = () => {
+  const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const [page, setPage] = useState(0);
@@ -43,7 +45,6 @@ const FeaturedProperties: React.FC = () => {
   };
 
   const { data, isLoading, isError, error } = useGetPropertiesQuery(params);
-
 
   const properties = data?.data?.properties ?? [];
   const pagination = data?.data?.pagination;
@@ -113,8 +114,8 @@ const FeaturedProperties: React.FC = () => {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {properties.map((prop: IProperty) => (
-              <Link
-                href={`/for-sale/${prop._id}`}
+              <div
+                onClick={() => router.push(`/for-sale/${prop._id}`)}
                 key={prop._id}
                 className="flex-none w-[340px] md:w-[750px] bg-white overflow-hidden relative group/card block cursor-pointer"
               >
@@ -189,6 +190,7 @@ const FeaturedProperties: React.FC = () => {
                       {/* Email */}
                       <a
                         href={`mailto:${prop.contact.email}`}
+                        onClick={(e) => e.stopPropagation()}
                         className="flex-1 flex items-center justify-center gap-2 border border-blue-200 text-blue-600 bg-blue-50 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-colors"
                       >
                         <Mail className="w-4 h-4" /> Email
@@ -196,7 +198,8 @@ const FeaturedProperties: React.FC = () => {
 
                       {/* Call */}
                       <a
-                        href={prop.contact.call}   // already has tel:
+                        href={prop.contact.call} // already has tel:
+                        onClick={(e) => e.stopPropagation()}
                         className="flex-1 flex items-center justify-center gap-2 border border-red-200 text-red-600 bg-red-50 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-100 transition-colors"
                       >
                         <Phone className="w-4 h-4" /> Call
@@ -205,6 +208,7 @@ const FeaturedProperties: React.FC = () => {
                       {/* WhatsApp */}
                       <a
                         href={prop.contact.whatsapp}
+                        onClick={(e) => e.stopPropagation()}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 flex items-center justify-center gap-2 border border-green-200 text-green-600 bg-green-50 py-2.5 rounded-lg text-sm font-semibold hover:bg-green-100 transition-colors"
@@ -214,7 +218,7 @@ const FeaturedProperties: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
           <div className="md:hidden max-w-7xl mx-auto px-4 sm:px-6 py-8 flex justify-center">

@@ -1,10 +1,11 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { MapPin, Bookmark } from 'lucide-react';
-import { useSavedJobs } from '@/hooks/useSavedJobs';
-import { Job } from '@/data/jobs';
+import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { MapPin, Bookmark } from "lucide-react";
+import { useSavedJobs } from "@/hooks/useSavedJobs";
+import { Job } from "@/data/jobs";
 
 // Extend Job for props, though JobCard likely receives Job properties directly
 // The interface in jobs.ts matches what we need. We can import it or defineProps here.
@@ -12,80 +13,105 @@ import { Job } from '@/data/jobs';
 // The file previously defined JobProps locally. I will update it to match the new data structure.
 
 interface JobProps {
-    id: string;
-    title: string;
-    company: string;
-    location: string;
-    type: string;
-    salary: string;
-    logo: string;
-    workMode?: 'WFO' | 'Remote' | 'Hybrid';
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  salary: string;
+  logo: string;
+  workMode?: "WFO" | "Remote" | "Hybrid";
 }
 
-const JobCard: React.FC<JobProps> = ({ id, title, company, location, type, salary, logo, workMode }) => {
-    const { isSaved, toggleSave } = useSavedJobs();
+const JobCard: React.FC<JobProps> = ({
+  id,
+  title,
+  company,
+  location,
+  type,
+  salary,
+  logo,
+  workMode,
+}) => {
+  const router = useRouter();
+  const { isSaved, toggleSave } = useSavedJobs();
 
-    const getBadgeStyles = (type: string) => {
-        const lowerType = type.toLowerCase();
-        if (lowerType === 'full-time') {
-            return 'bg-blue-50 text-blue-600';
-        }
-        if (lowerType === 'part-time' || lowerType === 'internship') {
-            return 'bg-emerald-50 text-emerald-600';
-        }
-        return 'bg-slate-50 text-slate-600';
-    };
+  const getBadgeStyles = (type: string) => {
+    const lowerType = type.toLowerCase();
+    if (lowerType === "full-time") {
+      return "bg-blue-50 text-blue-600";
+    }
+    if (lowerType === "part-time" || lowerType === "internship") {
+      return "bg-emerald-50 text-emerald-600";
+    }
+    return "bg-slate-50 text-slate-600";
+  };
 
-    return (
-        <Link href={`/jobs/${id}`} className="block relative group cursor-pointer">
-            <div className="bg-white p-5 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow duration-300">
+  return (
+    <div
+      onClick={() => router.push(`/jobs/${id}`)}
+      className="block relative group cursor-pointer"
+    >
+      <div className="bg-white p-5 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow duration-300">
+        {/* Header: Title and Work Mode Badge */}
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="text-[17px] font-bold text-slate-900 pr-4 leading-snug">
+            {title}
+          </h3>
+        </div>
 
-                {/* Header: Title and Work Mode Badge */}
-                <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-[17px] font-bold text-slate-900 pr-4 leading-snug">{title}</h3>
-                </div>
+        {/* Middle Row: Job Type and Salary */}
+        <div className="flex items-center gap-3 mb-6 text-sm">
+          <span
+            className={`px-2.5 py-1 rounded-md font-bold text-[10px] uppercase tracking-wide ${getBadgeStyles(type)}`}
+          >
+            {type}
+          </span>
+          <span className="text-slate-400 font-medium text-sm">
+            Salary:{" "}
+            <span className="text-slate-600 font-semibold">{salary}</span>
+          </span>
+        </div>
 
-                {/* Middle Row: Job Type and Salary */}
-                <div className="flex items-center gap-3 mb-6 text-sm">
-                    <span className={`px-2.5 py-1 rounded-md font-bold text-[10px] uppercase tracking-wide ${getBadgeStyles(type)}`}>
-                        {type}
-                    </span>
-                    <span className="text-slate-400 font-medium text-sm">
-                        Salary: <span className="text-slate-600 font-semibold">{salary}</span>
-                    </span>
-                </div>
-
-                {/* Bottom Row: Company Info and Actions */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        {/* Company Logo */}
-                        <div className="w-12 h-12 rounded-xl bg-slate-50 p-2 flex items-center justify-center border border-slate-100">
-                            <img src={logo} alt={`${company} logo`} className="w-full h-full object-contain" />
-                        </div>
-
-                        <div>
-                            <h4 className="font-bold text-slate-900 text-[15px]">{company}</h4>
-                            <div className="flex items-center gap-1 text-xs text-slate-400 mt-1">
-                                <MapPin className="w-3.5 h-3.5 text-slate-300" />
-                                <span>{location}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button
-                        className={`p-2 rounded-xl transition-colors ${isSaved(id) ? 'bg-blue-50 text-blue-600' : 'text-slate-300 hover:text-slate-400 bg-slate-50/50'}`}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleSave(id);
-                        }}
-                    >
-                        <Bookmark className={`w-5 h-5 ${isSaved(id) ? 'fill-current' : ''}`} />
-                    </button>
-                </div>
+        {/* Bottom Row: Company Info and Actions */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Company Logo */}
+            <div className="w-12 h-12 rounded-xl bg-slate-50 p-2 flex items-center justify-center border border-slate-100">
+              <img
+                src={logo}
+                alt={`${company} logo`}
+                className="w-full h-full object-contain"
+              />
             </div>
-        </Link>
-    );
+
+            <div>
+              <h4 className="font-bold text-slate-900 text-[15px]">
+                {company}
+              </h4>
+              <div className="flex items-center gap-1 text-xs text-slate-400 mt-1">
+                <MapPin className="w-3.5 h-3.5 text-slate-300" />
+                <span>{location}</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            className={`p-2 rounded-xl transition-colors ${isSaved(id) ? "bg-blue-50 text-blue-600" : "text-slate-300 hover:text-slate-400 bg-slate-50/50"}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleSave(id);
+            }}
+          >
+            <Bookmark
+              className={`w-5 h-5 ${isSaved(id) ? "fill-current" : ""}`}
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default JobCard;
