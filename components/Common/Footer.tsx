@@ -16,11 +16,11 @@ const Footer: React.FC = () => {
               Our mission is to empower people to buy, sell, rent, and list properties with ease while connecting them to genuine opportunities and careers in real estate.
             </p>
             <div className="flex flex-wrap gap-8 text-sm font-semibold text-slate-600">
-              <a href="#" className="hover:text-slate-900 transition-colors">Homepage</a>
-              <a href="#" className="hover:text-slate-900 transition-colors">For Sale</a>
-              <a href="#" className="hover:text-slate-900 transition-colors">Rental</a>
-              <a href="#" className="hover:text-slate-900 transition-colors">Jobs</a>
-              <a href="#" className="hover:text-slate-900 transition-colors">Contact Us</a>
+              <a href="/" className="hover:text-slate-900 transition-colors">Homepage</a>
+              <a href="/for-sale" className="hover:text-slate-900 transition-colors">For Sale</a>
+              <a href="/rentals" className="hover:text-slate-900 transition-colors">Rental</a>
+              <a href="/jobs" className="hover:text-slate-900 transition-colors">Jobs</a>
+              <a href="/contact-us" className="hover:text-slate-900 transition-colors">Contact Us</a>
             </div>
           </div>
 

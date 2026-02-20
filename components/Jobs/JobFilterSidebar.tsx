@@ -125,15 +125,7 @@ const JobFilterSidebar: React.FC = () => {
                 <div className="hidden md:block"></div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 mt-6 pt-4 border-t border-slate-100">
-                <button className="flex-1 bg-blue-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                    Apply Filters
-                </button>
-                <button className="flex-1 bg-slate-100 text-slate-700 py-2.5 px-4 rounded-lg font-medium hover:bg-slate-200 transition-colors">
-                    Clear All
-                </button>
-            </div>
+
         </div>
     );
 };

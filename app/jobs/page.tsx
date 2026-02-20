@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import JobSearchSection from '@/components/Jobs/JobSearchSection';
 import JobFilterSidebar from '@/components/Jobs/JobFilterSidebar';
@@ -6,78 +7,32 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Header from '@/components/Common/Header';
 import Footer from '@/components/Common/Footer';
 
-const mockJobs = [
-    {
-        id: '1',
-        title: 'Technical Support Specialist',
-        company: 'Google Inc.',
-        location: 'Dhaka, Bangladesh',
-        type: 'Part-Time',
-        salary: '$20,000 - $25,000',
-        logo: 'https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-512.png',
-        isNew: true,
-    },
-    {
-        id: '1',
-        title: 'Technical Support Specialist',
-        company: 'Google Inc.',
-        location: 'Dhaka, Bangladesh',
-        type: 'Part-Time',
-        salary: '$20,000 - $25,000',
-        logo: 'https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-512.png',
-        isNew: true,
-    },
-    {
-        id: '1',
-        title: 'Technical Support Specialist',
-        company: 'Google Inc.',
-        location: 'Dhaka, Bangladesh',
-        type: 'Part-Time',
-        salary: '$20,000 - $25,000',
-        logo: 'https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-512.png',
-        isNew: true,
-    },
-    {
-        id: '1',
-        title: 'Technical Support Specialist',
-        company: 'Google Inc.',
-        location: 'Dhaka, Bangladesh',
-        type: 'Part-Time',
-        salary: '$20,000 - $25,000',
-        logo: 'https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-512.png',
-        isNew: true,
-    },
-    {
-        id: '1',
-        title: 'Technical Support Specialist',
-        company: 'Google Inc.',
-        location: 'Dhaka, Bangladesh',
-        type: 'Part-Time',
-        salary: '$20,000 - $25,000',
-        logo: 'https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-512.png',
-        isNew: true,
-    },
-    {
-        id: '1',
-        title: 'Technical Support Specialist',
-        company: 'Google Inc.',
-        location: 'Dhaka, Bangladesh',
-        type: 'Part-Time',
-        salary: '$20,000 - $25,000',
-        logo: 'https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-512.png',
-        isNew: true,
-    },
-];
+import { mockJobs } from '@/data/jobs';
 
 export default function JobsPage() {
+    const ITEMS_PER_PAGE = 4;
+
+    const [currentPage, setCurrentPage] = React.useState(1);
+
+    const totalPages = Math.ceil(mockJobs.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const currentJobs = mockJobs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-white pt-24 pb-12">
-            <Header/>
+            <Header />
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-                    <div className="flex items-center gap-4 w-full md:w-auto">
+                    <div className="flex items-center gap-4 w-full flex-1">
                         <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors">
                             <ChevronLeft className="w-5 h-5 text-slate-600" />
                         </button>
@@ -104,43 +59,62 @@ export default function JobsPage() {
                         <button className="px-4 py-1.5 rounded-full border border-slate-200 text-sm font-medium text-slate-600 hover:border-slate-300 flex items-center gap-2">
                             UX/UI <span className="text-slate-400">×</span>
                         </button>
-                        <span className="text-sm text-slate-500 ml-auto md:ml-0">124 Results</span>
+                        <span className="text-sm text-slate-500 ml-auto md:ml-0">{mockJobs.length} Results</span>
                     </div>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Job List */}
-                    <div className="flex-1">
+                    <div className="flex flex-col space-y-4">
                         <div className="grid gap-4">
-                            {mockJobs.map((job, index) => (
-                                <JobCard key={index} {...job} />
+                            {currentJobs.map((job, index) => (
+                                <JobCard key={job.id} {...job} />
                             ))}
                         </div>
 
                         {/* Pagination */}
-                        <div className="flex items-center justify-center gap-2 mt-8">
-                            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
-                                <ChevronLeft className="w-4 h-4" />
-                            </button>
-                            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-600 text-white font-medium text-sm">01</button>
-                            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 font-medium text-sm">02</button>
-                            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 font-medium text-sm">03</button>
-                            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 font-medium text-sm">04</button>
-                            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 font-medium text-sm">05</button>
-                            <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
-                        </div>
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-2 mt-8">
+                                <button
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${currentPage === 1 ? 'text-slate-300 cursor-not-allowed' : 'hover:bg-slate-100 text-slate-400'}`}
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </button>
+
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        onClick={() => handlePageChange(page)}
+                                        className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${currentPage === page
+                                                ? 'bg-blue-600 text-white'
+                                                : 'hover:bg-slate-100 text-slate-600'
+                                            }`}
+                                    >
+                                        {page.toString().padStart(2, '0')}
+                                    </button>
+                                ))}
+
+                                <button
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${currentPage === totalPages ? 'text-slate-300 cursor-not-allowed' : 'hover:bg-slate-100 text-slate-400'}`}
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Sidebar Filters - Hidden on mobile, visible on desktop */}
-                    <div className="hidden lg:block w-80 shrink-0">
+                    <div className="hidden lg:block">
                         <JobFilterSidebar />
                     </div>
                 </div>
             </div>
 
-            <Footer/>
+            <Footer />
         </div>
     );
 }
