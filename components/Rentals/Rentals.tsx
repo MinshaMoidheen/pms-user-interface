@@ -17,7 +17,7 @@ import {
   GetPropertiesParams,
   useGetPropertiesQuery,
 } from "@/store/services/propertiesApiSlice";
-import FilterModal from "./FilterModal";
+import FilterModal from "../For-Sale/FilterModal";
 import DateRangePickerModal from "./DateRangePickerModal";
 
 const Rentals = () => {

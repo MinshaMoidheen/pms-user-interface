@@ -110,7 +110,7 @@ const Header: React.FC = () => {
                 key={link.name}
                 href={link.href}
                 className={`px-4 py-2 rounded-2xl transition-colors whitespace-nowrap ${pathname === link.href
-                  ? "bg-blue-600 text-white"
+                  ? "bg-[#FF5A3C] text-white"
                   : "hover:text-slate-900"
                   }`}
                 onClick={() => setIsMenuOpen(false)}

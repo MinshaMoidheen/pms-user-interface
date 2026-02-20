@@ -7,6 +7,8 @@ import Header from '../Common/Header';
 import SalesCard from './SalesCard';
 import MapViewSales from './MapViewSales';
 import Footer from '../Common/Footer';
+import DateRangePickerModal from '../Rentals/DateRangePickerModal';
+import FilterModal from './FilterModal';
 
 export interface Sales {
   id: string;
@@ -82,9 +84,46 @@ export const SALES: Sales[] = [
 
 const Sales = () => {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({
+    startDate: new Date(2026, 4, 23), // May 23
+    endDate: new Date(2026, 5, 15),   // June 15
+  });
+
+  const handleApplyFilters = (filters: any) => {
+    console.log("Applied filters:", filters);
+    setIsFilterModalOpen(false);
+  };
+
+  const handleApplyDates = (range: { startDate: Date | null; endDate: Date | null }) => {
+    setDateRange(range);
+    setIsDatePickerOpen(false);
+  };
+
+  const formatDateRange = () => {
+    if (!dateRange.startDate) return "Select Dates";
+    const startStr = dateRange.startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    if (!dateRange.endDate) return `${startStr} - ...`;
+    const endStr = dateRange.endDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return `${startStr} - ${endStr}`;
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApply={handleApplyFilters}
+      />
+
+      <DateRangePickerModal
+        isOpen={isDatePickerOpen}
+        onClose={() => setIsDatePickerOpen(false)}
+        onApply={handleApplyDates}
+        initialRange={dateRange}
+      />
+
       <Header />
 
       <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12 mt-14">
@@ -101,15 +140,21 @@ const Sales = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <button className="flex items-center gap-2.5 px-6 py-3 bg-white border border-gray-200 rounded-full font-medium text-gray-900 hover:border-gray-400 transition-all shadow-sm hover:shadow-md">
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className="flex items-center gap-2.5 px-6 py-3 bg-white border border-gray-200 rounded-full font-bold text-gray-900 hover:border-gray-400 transition-all shadow-sm hover:shadow-md"
+            >
               <SlidersHorizontal size={18} />
               <span>Filter</span>
             </button>
-            <button className="flex items-center gap-3 px-6 py-3 bg-[#F8FAFC] rounded-full cursor-pointer hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
+            <button
+              onClick={() => setIsDatePickerOpen(true)}
+              className="flex items-center gap-3 px-6 py-3 bg-[#F8FAFC] rounded-full cursor-pointer hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200"
+            >
               <Calendar size={18} className="text-gray-500" />
               <div className="flex flex-col -space-y-1">
                 <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Date</span>
-                <span className="text-sm font-medium text-gray-900">May 23 - June 15</span>
+                <span className="text-sm font-bold text-gray-900">{formatDateRange()}</span>
               </div>
               <ChevronDown size={18} className="text-gray-500 ml-2" />
             </button>
@@ -163,12 +208,10 @@ const Sales = () => {
           </div>
         </div>
 
-        {/* Mobile-only section spacer to prevent bottom nav overlap */}
         <div className="h-24 md:hidden" />
       </main>
 
-
-
+      <Footer />
     </div>
   );
 };
