@@ -23,7 +23,7 @@ export interface Sales {
   lng: number;
 }
 
-const SALES: Sales[] = [
+export const SALES: Sales[] = [
   {
     id: "1",
     title: "Luxury 3BHK Apartment",
@@ -92,7 +92,7 @@ const Sales = () => {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div className="space-y-2">
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-              287 Places in <br className="md:hidden" /> 
+              287 Places in <br className="md:hidden" />
               Bangalore, Karnataka
             </h1>
             <p className="text-gray-500 font-medium">
@@ -120,21 +120,19 @@ const Sales = () => {
         <div className="flex lg:hidden gap-2 mb-6">
           <button
             onClick={() => setViewMode('list')}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
-              viewMode === 'list'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${viewMode === 'list'
+              ? 'bg-gray-900 text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
           >
             List View
           </button>
           <button
             onClick={() => setViewMode('map')}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
-              viewMode === 'map'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${viewMode === 'map'
+              ? 'bg-gray-900 text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
           >
             Map View
           </button>
@@ -149,7 +147,7 @@ const Sales = () => {
                 <SalesCard key={sales.id} sales={sales} />
               ))}
             </div>
-            
+
             {/* Load More Button */}
             <div className="mt-10 text-center">
               <button className="px-8 py-3 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors shadow-md hover:shadow-lg">
@@ -159,9 +157,8 @@ const Sales = () => {
           </div>
 
           {/* Map View - Hidden on mobile when list view is active */}
-          <div className={`w-full lg:w-1/2 h-[500px] lg:h-auto lg:sticky lg:top-24 ${
-            viewMode === 'list' ? 'hidden lg:block' : 'block'
-          }`}>
+          <div className={`w-full lg:w-1/2 h-[500px] lg:h-auto lg:sticky lg:top-24 ${viewMode === 'list' ? 'hidden lg:block' : 'block'
+            }`}>
             <MapViewSales sales={SALES} />
           </div>
         </div>
@@ -170,8 +167,8 @@ const Sales = () => {
         <div className="h-24 md:hidden" />
       </main>
 
-     
-      
+
+
     </div>
   );
 };

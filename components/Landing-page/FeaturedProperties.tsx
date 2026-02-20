@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Ruler,
 } from "lucide-react";
+import Link from 'next/link';
 import {
   GetPropertiesParams,
   useGetPropertiesQuery,
@@ -112,9 +113,10 @@ const FeaturedProperties: React.FC = () => {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {properties.map((prop: IProperty) => (
-              <div
+              <Link
+                href={`/for-sale/${prop._id}`}
                 key={prop._id}
-                className="flex-none w-[340px] md:w-[750px] bg-white overflow-hidden relative group/card"
+                className="flex-none w-[340px] md:w-[750px] bg-white overflow-hidden relative group/card block cursor-pointer"
               >
                 <div className="flex flex-col md:flex-row gap-5 h-full">
                   {/* Image Container */}
@@ -212,14 +214,14 @@ const FeaturedProperties: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
-            <div className="md:hidden max-w-7xl mx-auto px-4 sm:px-6 py-8 flex justify-center">
+          <div className="md:hidden max-w-7xl mx-auto px-4 sm:px-6 py-8 flex justify-center">
             <button className="bg-[#FF5A3C] text-white px-8 py-3 rounded-full font-bold hover:bg-orange-600 transition-colors">
-                Load More
+              Load More
             </button>
-        </div>
+          </div>
         </div>
       </div>
     </section>

@@ -31,16 +31,21 @@ const propertiesApiSlice = apiSlice.injectEndpoints({
       providesTags: result =>
         result?.data?.properties
           ? [
-              ...result.data.properties.map(({ _id }) => ({ type: 'Properties' as const, id: _id })),
-              { type: 'Properties', id: 'LIST' }
-            ]
+            ...result.data.properties.map(({ _id }) => ({ type: 'Properties' as const, id: _id })),
+            { type: 'Properties', id: 'LIST' }
+          ]
           : [{ type: 'Properties', id: 'LIST' }]
     }),
-  
+
+    getProperty: builder.query<IProperty, string>({
+      query: (id) => ({ url: `${PROPERTIES_URL}/${id}` }),
+      providesTags: (result, error, id) => [{ type: 'Properties', id }],
+    }),
   }),
 });
 
 export const {
-   useGetPropertiesQuery
- } = propertiesApiSlice;
+  useGetPropertiesQuery,
+  useGetPropertyQuery,
+} = propertiesApiSlice;
 
