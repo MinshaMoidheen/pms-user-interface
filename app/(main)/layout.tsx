@@ -1,5 +1,5 @@
-import Header from '@/components/Header';
-import Footer from "@/components/Footer";
+import Header from '@/components/Common/Header';
+import Footer from "@/components/Common/Footer";
 import BottomNav from "@/components/BottomNav";
 
 import { StoreProvider } from '@/store/storeProvider';
