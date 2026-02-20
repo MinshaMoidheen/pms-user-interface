@@ -38,9 +38,11 @@ export interface IProperty {
   };
   images: string[]; // URLs to images
   contact: {
+    call: string;
     name: string;
     mobileNumber: string;
     email?: string;
+    whatsapp: string;
     whatsappNumber: string;
   };
   postedBy: string; // User who posted
@@ -57,18 +59,6 @@ export interface IProperty {
   updatedAt: Date;
 }
 
-
-export interface getPropertiesParams {
-     type: PropertyType;
-     category: PropertyCategory;
-     city: string;
-     state: string;
-     minPrice: string;
-     maxPrice: string;
-     search: string;
-     page: number;
-     limit: number;
-}
 
 export interface getPropertiesResponse {
     success: boolean;
