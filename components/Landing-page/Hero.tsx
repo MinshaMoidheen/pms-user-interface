@@ -24,9 +24,9 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <section className="relative pt-12 pb-2 md:pb-24 overflow-hidden min-h-screen">
+    <section className="relative pt-12 pb-2 md:pb-24 overflow-hidden min-h-[600px] md:min-h-screen">
       {/* Background Image - No overlay */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: "url('/images/heroImage.png')",
@@ -35,13 +35,13 @@ const Hero: React.FC = () => {
           backgroundRepeat: 'no-repeat'
         }}
       />
-      
+
       {/* NO OVERLAY - Removed completely */}
-      
+
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 h-full flex flex-col">
-    
+
         {/* Search Bar - Fixed */}
-        <div 
+        <div
           className="relative max-w-3xl mx-auto mb-12 md:mb-16 cursor-text"
           onClick={focusInput}
         >
@@ -53,20 +53,20 @@ const Hero: React.FC = () => {
                 <span className="text-slate-400">Search for Homes</span>
               </div>
             )}
-            
+
             {/* Search icon only at the start (when typing) */}
             {isFocused && (
               <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none z-10">
                 <Home className="w-5 h-5 text-blue-500" />
               </div>
             )}
-            
+
             {/* Search icon at the end */}
             <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none z-10">
               <Search className="w-6 h-6 text-slate-400" />
             </div>
-            
-            <input 
+
+            <input
               ref={inputRef}
               type="text"
               className={`w-full h-14 ${isFocused || searchValue ? 'pl-16' : 'pl-48'} pr-14 rounded-full border border-slate-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-lg bg-white`}
@@ -82,13 +82,13 @@ const Hero: React.FC = () => {
         {/* Category Grid - 3 items per row */}
         <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-6 max-w-xl mx-auto">
           {categories.map((cat, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className="flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 bg-white rounded-xl sm:rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer"
             >
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-2 sm:mb-3 md:mb-4 rounded-xl sm:rounded-2xl overflow-hidden">
-                <img 
-                  src={cat.image} 
+                <img
+                  src={cat.image}
                   alt={cat.label}
                   className="w-full h-full object-cover"
                 />

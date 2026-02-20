@@ -6,16 +6,16 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-white pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col lg:flex-row justify-between gap-16 mb-20">
+        <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-16 mb-12 lg:mb-20">
           <div className="max-w-md">
-            <div className="text-2xl font-bold mb-8">
+            <div className="text-2xl font-bold mb-6 lg:mb-8">
               <span className="text-slate-900">PMS</span>
               <span className="text-slate-400 font-normal">Club</span>
             </div>
-            <p className="text-slate-500 leading-relaxed mb-8">
+            <p className="text-slate-500 leading-relaxed mb-6 lg:mb-8">
               Our mission is to empower people to buy, sell, rent, and list properties with ease while connecting them to genuine opportunities and careers in real estate.
             </p>
-            <div className="flex flex-wrap gap-8 text-sm font-semibold text-slate-600">
+            <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-8 text-sm font-semibold text-slate-600 mb-0 lg:mb-8">
               <a href="/" className="hover:text-slate-900 transition-colors">Homepage</a>
               <a href="/for-sale" className="hover:text-slate-900 transition-colors">For Sale</a>
               <a href="/rentals" className="hover:text-slate-900 transition-colors">Rental</a>
@@ -25,9 +25,6 @@ const Footer: React.FC = () => {
           </div>
 
 
-          <div>
-
-          </div>
           <div className="bg-[#F8F9FB] p-8 md:p-10 rounded-[40px] flex-1 max-w-xl">
             <h3 className="text-2xl font-bold text-slate-900 mb-2">Want to Sell, Rent or Hire?</h3>
             <h4 className="text-2xl font-bold text-slate-900 mb-4">Contact Us.</h4>

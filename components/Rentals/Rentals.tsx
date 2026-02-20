@@ -257,7 +257,7 @@ const Rentals = () => {
         <div className="h-24 md:hidden" />
       </main>
 
-      <Footer />
+     
     </div>
   );
 };
