@@ -7,7 +7,7 @@ const JobSearchSection: React.FC = () => {
     return (
         <div className="flex flex-col md:flex-row gap-4 w-full items-center">
             {/* Search Box Inputs Container */}
-            <div className="flex-1 bg-white rounded-full shadow-sm border border-slate-200 flex flex-col md:flex-row items-center w-full">
+            <div className="flex-1 bg-white rounded-[32px] shadow-sm border border-slate-100 flex flex-col md:flex-row items-center w-full overflow-hidden">
                 {/* Search Input */}
                 <div className="flex-1 flex items-center px-6 w-full h-14 border-b md:border-b-0 md:border-r border-slate-200">
                     <Search className="w-5 h-5 text-blue-600 shrink-0 mr-3" />

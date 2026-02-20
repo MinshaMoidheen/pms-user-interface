@@ -26,7 +26,7 @@ const FeaturedProperties: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(8);
   const [search, setSearch] = useState("");
   const [type, setType] = useState<GetPropertiesParams["type"]>("SALE");
   const [category, setCategory] =
@@ -44,7 +44,7 @@ const FeaturedProperties: React.FC = () => {
 
   const { data, isLoading, isError, error } = useGetPropertiesQuery(params);
 
-  console.log("propertiesData", data);
+
   const properties = data?.data?.properties ?? [];
   const pagination = data?.data?.pagination;
   const total = pagination?.total ?? 0;

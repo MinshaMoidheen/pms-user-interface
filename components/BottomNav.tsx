@@ -21,7 +21,13 @@ const BottomNav = () => {
     {
       label: "Sales",
       icon: Weight,
-      href: "/sales",
+      href: "/for-sale",
+    },
+
+    {
+      label: "Jobs",
+      icon: Weight,
+      href: "/jobs",
     },
     {
       label: "Profile",
@@ -39,16 +45,15 @@ const BottomNav = () => {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                isActive
+              className={`flex flex-col items-center gap-1 transition-colors ${isActive
                   ? "text-[#FF5A3C]"
-                  : "text-gray-500 hover:text-gray-900"
-              }`}
+                  : "text-slate-400 hover:text-slate-600"
+                }`}
             >
               <item.icon
-                className={`w-6 h-6 ${isActive ? "fill-current" : ""}`}
+                className={`w-6 h-6 ${isActive ? "fill-[#FF5A3C]" : ""}`}
               />
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-[11px] font-bold">{item.label}</span>
             </Link>
           );
         })}
