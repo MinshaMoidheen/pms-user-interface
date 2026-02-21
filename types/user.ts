@@ -55,5 +55,7 @@ export interface IUser {
 export interface getProfileResponse {
   success: boolean;
   message: string;
-  data: IUser;
+  data: {
+    user:IUser;
+  };
 }

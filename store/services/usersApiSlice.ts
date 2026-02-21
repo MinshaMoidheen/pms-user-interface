@@ -13,14 +13,13 @@ const usersApiSlice = apiSlice.injectEndpoints({
         providesTags: (result, error, id) => [{ type: "Users", id: "LIST" }],
     }),
 
-    updateUser: builder.mutation<getProfileResponse, {id: string, body: FormData}>({
-        query: ({id, body}) => ({
-            url: `${USER_URL}/${id}`,
+    updateProfile: builder.mutation<getProfileResponse, {body: FormData}>({
+        query: ({body}) => ({
+            url: `${USER_URL}/profile`,
             method: "PUT",
             body,
         }),
-        invalidatesTags: (result, error, { id }) => [
-            { type: "Users", id },
+        invalidatesTags: (result, error, { body }) => [
             { type: "Users", id: "LIST" },
         ],
     })
@@ -31,5 +30,5 @@ const usersApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetProfileQuery,
-  useUpdateUserMutation
+  useUpdateProfileMutation
 } = usersApiSlice;

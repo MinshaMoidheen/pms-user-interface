@@ -70,10 +70,14 @@ const jobApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
-    getMyApplications: builder.query<getMyApplicationsResponse, void>({
-      query: () => ({
+    getMyApplications: builder.query<getMyApplicationsResponse, {page: number; limit: number}>({
+      query: ({page = 1, limit = 10}) => ({
         url: `${JOBS_URL}/my-applications`,
         method: "GET",
+        params: {
+            page,
+            limit
+        }
       }),
       providesTags: (result) =>
         result?.data?.applications

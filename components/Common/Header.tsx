@@ -61,7 +61,7 @@ const Header: React.FC = () => {
               key={link.name}
               href={link.href}
               className={`px-4 py-2 rounded-full transition-colors whitespace-nowrap ${pathname === link.href
-                ? `${link.href === "/jobs" ? "bg-[#FF5A3C]" : "bg-[#FF5A3C]"} text-white`
+                ? `${link.href === "/jobs" ? "bg-[#2D5BFF]" : "bg-[#FF5A3C]"} text-white`
                 : "hover:text-slate-900"
                 }`}
             >

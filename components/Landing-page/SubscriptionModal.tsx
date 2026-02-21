@@ -234,10 +234,10 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
                                         <div className="w-8 h-1.5 bg-gray-100 rounded-full"></div>
                                     </div>
                                 </div>
-                                <div className="absolute -left-12 top-0 p-3 bg-white rounded-xl shadow-md rotate-[-12deg]">
+                                <div className="absolute -left-12 top-0 p-3 bg-white rounded-xl shadow-md rotate-12">
                                     <User className="w-6 h-6 text-blue-400" />
                                 </div>
-                                <div className="absolute -right-8 bottom-0 p-3 bg-white rounded-xl shadow-md rotate-[12deg]">
+                                <div className="absolute -right-8 bottom-0 p-3 bg-white rounded-xl shadow-md rotate-12">
                                     <Mail className="w-6 h-6 text-blue-500" />
                                 </div>
                             </div>

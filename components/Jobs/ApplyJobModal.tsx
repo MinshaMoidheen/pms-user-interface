@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X, Upload, Check } from "lucide-react";
 import { IJobPost } from "@/types/jobs";
 import { useApplyJobMutation } from "@/store/services/jobApiSlice";
+import { useRouter } from "next/navigation";
 
 interface ApplyJobModalProps {
   job: IJobPost;
@@ -20,6 +21,7 @@ const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
     phone: "",
     cv: null as File | null,
   });
+  const router = useRouter();
 
   const [applyJob, { isLoading: isSubmitting }] = useApplyJobMutation();
   const [isSuccess, setIsSuccess] = useState(false);
@@ -51,6 +53,7 @@ const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
         onClose();
         setIsSuccess(false);
         setFormData({ fullName: "", email: "", phone: "", cv: null });
+        router.push("/jobs")
       }, 3000);
     } catch (err: any) {
       console.error("Failed to apply:", err);
