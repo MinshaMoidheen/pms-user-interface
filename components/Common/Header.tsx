@@ -4,10 +4,16 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, User } from "lucide-react";
+import ProfileModal from "./ProfileModal";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { openProfileModal, closeProfileModal } from "@/store/uiSlice";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const isProfileModalOpen = useSelector((state: RootState) => state.ui.isProfileModalOpen);
+  const dispatch = useDispatch();
   const pathname = usePathname();
 
   const navLinks = [
@@ -53,7 +59,7 @@ const Header: React.FC = () => {
               key={link.name}
               href={link.href}
               className={`px-4 py-2 rounded-full transition-colors whitespace-nowrap ${pathname === link.href
-                ? `${link.href === "/jobs" ? "bg-[#FF5A3C]" : "bg-[#FF5A3C]" } text-white`
+                ? `${link.href === "/jobs" ? "bg-[#FF5A3C]" : "bg-[#FF5A3C]"} text-white`
                 : "hover:text-slate-900"
                 }`}
             >
@@ -74,14 +80,28 @@ const Header: React.FC = () => {
                 <button className="bg-[#FF5A3C] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-orange-600 transition-colors whitespace-nowrap">
                   List Jobs
                 </button>
+                <button
+                  onClick={() => dispatch(openProfileModal())}
+                  className="p-2.5 rounded-full bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  <User className="w-5 h-5" />
+                </button>
               </>
             ) : (
-              <Link
-                href="/login"
-                className="bg-[#2D5BFF] text-white px-8 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap"
-              >
-                Login
-              </Link>
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/login"
+                  className="bg-[#2D5BFF] text-white px-8 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/login"
+                  className="p-2.5 rounded-full bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  <User className="w-5 h-5" />
+                </Link>
+              </div>
             )}
           </div>
 
@@ -130,19 +150,45 @@ const Header: React.FC = () => {
                 <button className="w-full bg-[#FF5A3C] text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors">
                   List Jobs
                 </button>
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    dispatch(openProfileModal());
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-slate-50 text-slate-700 px-6 py-3 rounded-full font-semibold hover:bg-slate-100 transition-colors"
+                >
+                  <User className="w-5 h-5" />
+                  Profile
+                </button>
               </>
             ) : (
-              <Link
-                href="/login"
-                onClick={() => setIsMenuOpen(false)}
-                className="w-full bg-[#2D5BFF] text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors text-center"
-              >
-                Login
-              </Link>
+              <div className="flex flex-col gap-3">
+                <Link
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full bg-[#2D5BFF] text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors text-center"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 bg-slate-50 text-slate-700 px-6 py-3 rounded-full font-semibold hover:bg-slate-100 transition-colors"
+                >
+                  <User className="w-5 h-5" />
+                  Profile
+                </Link>
+              </div>
             )}
           </div>
         </div>
       )}
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => dispatch(closeProfileModal())}
+      />
     </header>
   );
 };
