@@ -67,7 +67,7 @@ const FeaturedProperties: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-5 bg-white mt-5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex justify-between items-end mb-8">
           <div>

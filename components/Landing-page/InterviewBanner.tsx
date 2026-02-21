@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const InterviewBanner: React.FC = () => {
   return (
-    <section className="pt-4 md:pt-12 pb-12 bg-white">
+    <section className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="bg-[#E8EBF7] rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
 

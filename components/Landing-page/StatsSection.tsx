@@ -10,7 +10,7 @@ const stats = [
 
 const StatsSection: React.FC = () => {
   return (
-    <section className="py-24 bg-white">
+    <section className="bg-white mt-5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="max-w-2xl mb-20">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">Your Property Journey Starts Here</h2>
@@ -28,7 +28,7 @@ const StatsSection: React.FC = () => {
             />
           </div>
           
-          <div className="w-full lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 mt-25">
+          <div className="w-full lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 md:mt-24 sm:mt-10 ">
             {stats.map((stat, i) => (
               <div key={i}>
                 <div className="text-[#FF5A3C] text-5xl font-extrabold mb-4">{stat.value}</div>
