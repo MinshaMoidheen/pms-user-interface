@@ -66,3 +66,69 @@ export interface getJobPostByIdResponse {
     job: IJobPost;
   };
 }
+
+
+// Applications
+
+export type ApplicationStatus = 'PENDING' | 'SHORTLISTED' | 'REJECTED' | 'ACCEPTED';
+
+export interface IJobApplication {
+  _id: string;
+  jobPost: IJobPost;
+  applicant: string; // User who applied
+  createdBy: string; // User who created
+  updatedBy?: string; // User who last updated
+  status: ApplicationStatus;
+  coverLetter?: string;
+  appliedAt: Date;
+  reviewedAt?: Date;
+  reviewedBy?: string;
+  notes?: string; // Internal notes by employer
+  isDeleted: {
+    status: boolean;
+    deletedBy?: string;
+    deletedAt?: Date;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface applyJobRequest {
+ fullname: string;
+ mobileNumber: string;
+ email?: string;
+ cv?: File;
+}
+
+export interface applyJobResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    jobPost: {
+      id: string;
+      title: string;
+      companyName: string;
+    };
+    contact: {
+      whatsapp: string;
+      call: string;
+      whatsappNumber: string;
+      mobileNumber: string;
+    };
+  };
+}
+
+export interface getMyApplicationsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    applications: IJobApplication[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  };
+}

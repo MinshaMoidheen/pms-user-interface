@@ -28,8 +28,8 @@ const Rentals = () => {
     startDate: Date | null;
     endDate: Date | null;
   }>({
-    startDate: new Date(2026, 4, 23), // May 23
-    endDate: new Date(2026, 5, 15), // June 15
+    startDate: new Date(2026, 0, 1),
+    endDate: new Date(2026, 11, 31), 
   });
 
   const [appliedFilters, setAppliedFilters] = useState<any>(null);

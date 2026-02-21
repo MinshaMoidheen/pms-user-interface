@@ -5,33 +5,21 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MapPin, Bookmark } from "lucide-react";
 import { useSavedJobs } from "@/hooks/useSavedJobs";
-import { Job } from "@/data/jobs";
+import { IJobPost } from "@/types/jobs";
 
 // Extend Job for props, though JobCard likely receives Job properties directly
 // The interface in jobs.ts matches what we need. We can import it or defineProps here.
 // Let's reuse the Job interface from data/jobs.ts to be safe, or redefine compatible props.
 // The file previously defined JobProps locally. I will update it to match the new data structure.
 
-interface JobProps {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  salary: string;
-  logo: string;
-  workMode?: "WFO" | "Remote" | "Hybrid";
-}
-
-const JobCard: React.FC<JobProps> = ({
-  id,
+const JobCard: React.FC<IJobPost> = ({
+  _id,
   title,
-  company,
+  companyName,
   location,
-  type,
+  employmentType,
   salary,
-  logo,
-  workMode,
+  contact,
 }) => {
   const router = useRouter();
   const { isSaved, toggleSave } = useSavedJobs();
@@ -49,7 +37,7 @@ const JobCard: React.FC<JobProps> = ({
 
   return (
     <div
-      onClick={() => router.push(`/jobs/${id}`)}
+      onClick={() => router.push(`/jobs/${_id}`)}
       className="block relative group cursor-pointer"
     >
       <div className="bg-white p-5 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow duration-300">
@@ -63,13 +51,15 @@ const JobCard: React.FC<JobProps> = ({
         {/* Middle Row: Job Type and Salary */}
         <div className="flex items-center gap-3 mb-6 text-sm">
           <span
-            className={`px-2.5 py-1 rounded-md font-bold text-[10px] uppercase tracking-wide ${getBadgeStyles(type)}`}
+            className={`px-2.5 py-1 rounded-md font-bold text-[10px] uppercase tracking-wide ${getBadgeStyles(employmentType)}`}
           >
-            {type}
+            {employmentType}
           </span>
           <span className="text-slate-400 font-medium text-sm">
             Salary:{" "}
-            <span className="text-slate-600 font-semibold">{salary}</span>
+            <span className="text-slate-600 font-semibold">
+              {salary?.max ? `₹${salary.max}` : "Not Specified"}
+            </span>
           </span>
         </div>
 
@@ -77,35 +67,34 @@ const JobCard: React.FC<JobProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Company Logo */}
-            <div className="w-12 h-12 rounded-xl bg-slate-50 p-2 flex items-center justify-center border border-slate-100">
-              <img
-                src={logo}
-                alt={`${company} logo`}
-                className="w-full h-full object-contain"
-              />
+            <div className="w-12 h-12 rounded-xl bg-slate-50 p-2 flex items-center justify-center border border-slate-100 italic text-[10px] text-slate-400 text-center uppercase">
+              {companyName ? companyName.charAt(0) : "J"}
             </div>
 
             <div>
               <h4 className="font-bold text-slate-900 text-[15px]">
-                {company}
+                {companyName}
               </h4>
               <div className="flex items-center gap-1 text-xs text-slate-400 mt-1">
                 <MapPin className="w-3.5 h-3.5 text-slate-300" />
-                <span>{location}</span>
+                <span>
+                  {location?.address ? `${location.address}, ` : ""}
+                  {location?.city}, {location?.state}
+                </span>
               </div>
             </div>
           </div>
 
           <button
-            className={`p-2 rounded-xl transition-colors ${isSaved(id) ? "bg-blue-50 text-blue-600" : "text-slate-300 hover:text-slate-400 bg-slate-50/50"}`}
+            className={`p-2 rounded-xl transition-colors ${isSaved(_id) ? "bg-blue-50 text-blue-600" : "text-slate-300 hover:text-slate-400 bg-slate-50/50"}`}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              toggleSave(id);
+              toggleSave(_id);
             }}
           >
             <Bookmark
-              className={`w-5 h-5 ${isSaved(id) ? "fill-current" : ""}`}
+              className={`w-5 h-5 ${isSaved(_id) ? "fill-current" : ""}`}
             />
           </button>
         </div>

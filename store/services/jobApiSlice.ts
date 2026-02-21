@@ -1,7 +1,14 @@
 import { apiSlice } from "./apiSlice";
-import { JOBS_URL,} from "../constants";
+import { JOBS_URL } from "../constants";
 
-import type { EmploymentType, getJobPostsResponse, getJobPostByIdResponse } from "@/types/jobs";
+import type {
+  EmploymentType,
+  getJobPostsResponse,
+  getJobPostByIdResponse,
+  applyJobResponse,
+  getMyApplicationsResponse,
+  applyJobRequest,
+} from "@/types/jobs";
 
 export interface GetJobsParams {
   city?: string;
@@ -14,8 +21,6 @@ export interface GetJobsParams {
 
 const jobApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-
-
     getJobPosts: builder.query<getJobPostsResponse, GetJobsParams | void>({
       query: (params) => {
         const p: GetJobsParams = params ?? {};
@@ -45,14 +50,48 @@ const jobApiSlice = apiSlice.injectEndpoints({
           : [{ type: "Jobs", id: "LIST" }],
     }),
 
-    getJobById: builder.query<getJobPostByIdResponse, string | undefined>(
-      {
-        query: (id) => ({ url: `${JOBS_URL}/${id}` }),
-        providesTags: (result, error, id) => [{ type: "Jobs", id }],
-      },
-    ),
+    getJobById: builder.query<getJobPostByIdResponse, string | undefined>({
+      query: (id) => ({ url: `${JOBS_URL}/${id}` }),
+      providesTags: (result, error, id) => [{ type: "Jobs", id }],
+    }),
+
+    applyJob: builder.mutation<
+      applyJobResponse,
+      { id: string; body: FormData }
+    >({
+      query: ({ id, body }) => ({
+        url: `${JOBS_URL}/${id}/apply`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Applications", id: "LIST" },
+        { type: "Jobs", id },
+      ],
+    }),
+
+    getMyApplications: builder.query<getMyApplicationsResponse, void>({
+      query: () => ({
+        url: `${JOBS_URL}/my-applications`,
+        method: "GET",
+      }),
+      providesTags: (result) =>
+        result?.data?.applications
+          ? [
+              ...result.data.applications.map(({ _id }) => ({
+                type: "Applications" as const,
+                id: _id,
+              })),
+              { type: "Applications", id: "LIST" },
+            ]
+          : [{ type: "Applications", id: "LIST" }],
+    }),
   }),
 });
 
-export const { useGetJobPostsQuery, useGetJobByIdQuery } =
-  jobApiSlice;
+export const {
+  useGetJobPostsQuery,
+  useGetJobByIdQuery,
+  useApplyJobMutation,
+  useGetMyApplicationsQuery,
+} = jobApiSlice;
