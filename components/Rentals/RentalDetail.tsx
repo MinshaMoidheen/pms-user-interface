@@ -27,7 +27,10 @@ import {
   Ruler,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useGetPropertyByIdQuery } from "@/store/services/propertiesApiSlice";
+import {
+  useGetPropertyByIdQuery,
+  useGetSimilarPropertiesQuery,
+} from "@/store/services/propertiesApiSlice";
 import Header from "../Common/Header";
 import Link from "next/link";
 import Footer from "../Common/Footer";
@@ -41,10 +44,20 @@ interface RentalDetailProps {
 const RentalDetail: React.FC<RentalDetailProps> = () => {
   const router = useRouter();
   const { id } = useParams();
-  const { data: property, isLoading, isError } = useGetPropertyByIdQuery(id as string);
+  const {
+    data: property,
+    isLoading,
+    isError,
+  } = useGetPropertyByIdQuery(id as string);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const displayedProperty = property?.data?.property;
+
+  const { data: similarProperties } = useGetSimilarPropertiesQuery(
+    id as string,
+  );
+
+  const similarPropertiesList = similarProperties?.data?.properties;
 
   const [showMore, setShowMore] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -70,8 +83,6 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
       </div>
     );
   }
-
-  const SALES : any[] = [];
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
@@ -279,9 +290,17 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                       "Fully Furnished",
                   },
                   { label: "Average Mortage", value: "₹ 10,00,000" },
-                  { label: "Plot", value: `${displayedProperty.area.value} ${displayedProperty.area.unit}` },
+                  {
+                    label: "Plot",
+                    value: `${displayedProperty.area.value} ${displayedProperty.area.unit}`,
+                  },
                   { label: "Completion Status", value: "Ready" },
-                  { label: "Updated", value: new Date(displayedProperty.updatedAt).toLocaleDateString() },
+                  {
+                    label: "Updated",
+                    value: new Date(
+                      displayedProperty.updatedAt,
+                    ).toLocaleDateString(),
+                  },
                 ].map((detail, idx) => (
                   <div
                     key={idx}
@@ -629,15 +648,15 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {SALES.slice(0, 4).map((sale) => (
+            {similarPropertiesList?.slice(0, 4).map((sale) => (
               <div
-                key={sale.id}
-                onClick={() => router.push(`/for-sale/${sale.id}`)}
+                key={sale._id}
+                onClick={() => router.push(`/rentals/${sale._id}`)}
                 className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
               >
                 <div className="relative aspect-4/3 overflow-hidden">
                   <img
-                    src={sale.imageUrl}
+                    src={sale.images[0]}
                     alt={sale.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -660,16 +679,20 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                     </span>
                   </div>
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    {displayedProperty.type}
+                    {sale.flexibleFields?.propertyType}
                   </p>
                   <div className="flex items-center gap-4 py-2 border-y border-gray-50">
                     <div className="flex items-center gap-1.5">
                       <BedDouble size={14} className="text-gray-400" />
-                      <span className="text-[10px] font-bold">2 Bedrooms</span>
+                      <span className="text-[10px] font-bold">
+                        {sale.flexibleFields?.bedrooms} Bedrooms
+                      </span>
                     </div>
                     <div className="flex items-center gap-1.5 border-l pl-4 border-gray-100">
-                      <Maximize size={14} className="text-gray-400" />
-                      <span className="text-[10px] font-bold">1200 sq.ft</span>
+                      <Ruler size={14} className="text-gray-400 rotate-90" />
+                      <span className="text-[10px] font-bold">
+                        {sale.area?.value} {sale?.area?.unit}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-1">

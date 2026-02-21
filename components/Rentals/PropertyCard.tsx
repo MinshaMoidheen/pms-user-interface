@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Heart, Star, MapPin } from "lucide-react";
 import { IProperty } from "@/types/properties";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+
 
 interface PropertyCardProps {
   property: IProperty;
