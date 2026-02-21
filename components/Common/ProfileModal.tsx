@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User, Briefcase, Upload, FileText, Plus, ChevronRight, CheckCircle2, X } from "lucide-react";
+import { User, Briefcase, Upload, FileText, Plus, ChevronRight, CheckCircle2, X, CreditCard, Clock, ShieldCheck, Zap } from "lucide-react";
+import SubscriptionModal from "../Landing-page/SubscriptionModal";
 
 interface ProfileModalProps {
     isOpen: boolean;
@@ -9,8 +10,11 @@ interface ProfileModalProps {
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
-    const [activeTab, setActiveTab] = useState<"personal" | "applied">("personal");
+    const [activeTab, setActiveTab] = useState<"Personal" | "Applied Jobs" | "Subscription">("Personal");
     const [currentPage, setCurrentPage] = useState(1);
+
+    const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState(true); // Defaulting for demo
 
     // Prevent scrolling when modal is open
     useEffect(() => {
@@ -29,6 +33,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
     const tabs = [
         { name: "Personal", icon: User },
         { name: "Applied Jobs", icon: Briefcase },
+        { name: "Subscription", icon: CreditCard },
     ];
 
     const resumes = [
@@ -211,6 +216,109 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
                         </div>
+                    ) : activeTab === "Subscription" ? (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto w-full">
+                            <div className="flex items-center gap-2 mb-8">
+                                <h2 className="text-xl font-bold text-slate-900">Subscription Management</h2>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                {/* Left Side: Plan Info */}
+                                <div className="lg:col-span-7 space-y-6">
+                                    <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+                                        {/* Background Gradient Accent */}
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#2D5BFF]/5 rounded-bl-full -mr-8 -mt-8" />
+
+                                        <div className="relative z-10">
+                                            <div className="flex items-center justify-between mb-8">
+                                                <div className="p-3 bg-blue-50 rounded-2xl">
+                                                    <Zap className="w-6 h-6 text-[#2D5BFF]" />
+                                                </div>
+                                                <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${isSubscribed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                                                    {isSubscribed ? 'Active Account' : 'Expired'}
+                                                </span>
+                                            </div>
+
+                                            <div className="mb-8">
+                                                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Current Plan</p>
+                                                <h3 className="text-3xl font-black text-slate-900">Silver Monthly</h3>
+                                                <p className="text-slate-400 text-sm mt-1">₹699 / per month</p>
+                                            </div>
+
+                                            <div className="flex items-center gap-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                                <div className="flex items-center gap-2">
+                                                    <Clock className="w-4 h-4 text-slate-400" />
+                                                    <div>
+                                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Renews on</p>
+                                                        <p className="text-xs font-bold text-slate-800">17 March, 2026</p>
+                                                    </div>
+                                                </div>
+                                                <div className="w-px h-8 bg-slate-200" />
+                                                <div className="flex items-center gap-2">
+                                                    <ShieldCheck className="w-4 h-4 text-slate-400" />
+                                                    <div>
+                                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Payment</p>
+                                                        <p className="text-xs font-bold text-slate-800">WhatsApp Pay</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <button
+                                            onClick={() => setIsSubscriptionModalOpen(true)}
+                                            className="bg-white border border-slate-200 text-slate-700 py-4 px-6 rounded-2xl font-bold hover:border-[#2D5BFF] hover:text-[#2D5BFF] transition-all flex items-center justify-center gap-2 group"
+                                        >
+                                            Renew Plan
+                                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </button>
+                                        <button
+                                            onClick={() => setIsSubscriptionModalOpen(true)}
+                                            className="bg-[#2D5BFF] text-white py-4 px-6 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 group active:scale-95"
+                                        >
+                                            Upgrade Plan
+                                            <Zap className="w-4 h-4 fill-white" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Right Side: Features/Benefits */}
+                                <div className="lg:col-span-5">
+                                    <div className="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden h-full">
+                                        {/* Decorative Element */}
+                                        <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
+
+                                        <h4 className="text-lg font-bold mb-6 flex items-center gap-2">
+                                            <div className="w-1.5 h-6 bg-[#2D5BFF] rounded-full" />
+                                            Plan Benefits
+                                        </h4>
+                                        <ul className="space-y-4">
+                                            {[
+                                                "Minimum 6 interview calls",
+                                                "Dedicated PMS Club support",
+                                                "Direct recruiter contact",
+                                                "Priority shortlisting",
+                                                "WhatsApp support line"
+                                            ].map((benefit, i) => (
+                                                <li key={i} className="flex items-center gap-3">
+                                                    <div className="p-1 bg-white/10 rounded-full">
+                                                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
+                                                    </div>
+                                                    <span className="text-sm font-medium text-slate-300">{benefit}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                        <div className="mt-12 p-4 bg-white/5 rounded-2xl border border-white/10">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase mb-2">Need help?</p>
+                                            <p className="text-xs text-slate-300">Contact our support team anytime via WhatsApp for subscription queries.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     ) : (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center gap-2 mb-6">
@@ -341,6 +449,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                     )}
                 </div>
             </div>
+
+            <SubscriptionModal
+                isOpen={isSubscriptionModalOpen}
+                onClose={() => setIsSubscriptionModalOpen(false)}
+            />
         </div>
     );
 };
