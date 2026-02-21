@@ -27,7 +27,7 @@ import {
   Ruler,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useGetPropertyByIdQuery } from "@/store/services/propertiesApiSlice";
+import { useGetPropertyByIdQuery, useGetSimilarPropertiesQuery } from "@/store/services/propertiesApiSlice";
 import Header from "../Common/Header";
 import Link from "next/link";
 import Footer from "../Common/Footer";
@@ -42,6 +42,11 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
   const router = useRouter();
   const { id } = useParams();
   const { data: property, isLoading, isError } = useGetPropertyByIdQuery(id as string);
+
+   const { data: similarProperties } = useGetSimilarPropertiesQuery(id as string);
+
+  const similarPropertiesList = similarProperties?.data?.properties;
+
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const displayedProperty = property?.data?.property;
@@ -71,7 +76,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
     );
   }
 
-  const SALES : any[] = [];
+ 
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
@@ -629,15 +634,15 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {SALES.slice(0, 4).map((sale) => (
+            {similarPropertiesList?.slice(0, 4).map((sale) => (
               <div
-                key={sale.id}
-                onClick={() => router.push(`/for-sale/${sale.id}`)}
+                key={sale._id}
+                onClick={() => router.push(`/for-sale/${sale._id}`)}
                 className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
               >
                 <div className="relative aspect-4/3 overflow-hidden">
                   <img
-                    src={sale.imageUrl}
+                    src={sale.images[0]}
                     alt={sale.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -660,16 +665,16 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                     </span>
                   </div>
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    {displayedProperty.type}
+                    {sale.flexibleFields?.propertyType}
                   </p>
                   <div className="flex items-center gap-4 py-2 border-y border-gray-50">
                     <div className="flex items-center gap-1.5">
                       <BedDouble size={14} className="text-gray-400" />
-                      <span className="text-[10px] font-bold">2 Bedrooms</span>
+                      <span className="text-[10px] font-bold">{sale.flexibleFields?.bedrooms} Bedrooms</span>
                     </div>
                     <div className="flex items-center gap-1.5 border-l pl-4 border-gray-100">
-                      <Maximize size={14} className="text-gray-400" />
-                      <span className="text-[10px] font-bold">1200 sq.ft</span>
+                      <Ruler size={14} className="text-gray-400 rotate-90" />
+                      <span className="text-[10px] font-bold">{sale.area?.value} {sale?.area?.unit}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-1">

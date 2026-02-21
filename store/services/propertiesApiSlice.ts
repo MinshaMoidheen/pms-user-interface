@@ -4,6 +4,7 @@ import { PROPERTIES_URL } from "../constants";
 import type {
   getPropertiesResponse,
   getPropertyByIdResponse,
+  getSimilarPropertiesResponse,
   IProperty,
   PropertyCategory,
   PropertyType,
@@ -92,12 +93,23 @@ const propertiesApiSlice = apiSlice.injectEndpoints({
           : [{ type: "Properties", id: "LIST" }],
     }),
 
-    getPropertyById: builder.query<getPropertyByIdResponse, string | undefined>({
-      query: (id) => ({ url: `${PROPERTIES_URL}/${id}` }),
+    getPropertyById: builder.query<getPropertyByIdResponse, string | undefined>(
+      {
+        query: (id) => ({ url: `${PROPERTIES_URL}/${id}` }),
+        providesTags: (result, error, id) => [{ type: "Properties", id }],
+      },
+    ),
+
+    getSimilarProperties: builder.query<getSimilarPropertiesResponse, string | undefined>({
+      query: (id) => ({ url: `${PROPERTIES_URL}/${id}/similar` }),
       providesTags: (result, error, id) => [{ type: "Properties", id }],
     }),
+
   }),
 });
 
-export const { useGetPropertiesQuery, useGetPropertyByIdQuery } =
-  propertiesApiSlice;
+export const {
+  useGetPropertiesQuery,
+  useGetPropertyByIdQuery,
+  useGetSimilarPropertiesQuery,
+} = propertiesApiSlice;

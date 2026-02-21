@@ -18,6 +18,9 @@ import {
   Trophy,
   Plus,
   Minus,
+  ShoppingBag,
+  Building,
+  Building2Icon,
 } from "lucide-react";
 
 interface FilterModalProps {
@@ -32,7 +35,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   onApply,
 }) => {
   const [propertyCategory, setPropertyCategory] = useState("All Type");
-  const [propertyType, setPropertyType] = useState<string[]>(["Apartment"]);
+  const [propertyType, setPropertyType] = useState<string[]>(["APARTMENT"]);
 
   const [rooms, setRooms] = useState<number | "Any">("Any");
   const [beds, setBeds] = useState<number | "Any">("Any");
@@ -217,11 +220,14 @@ const FilterModal: React.FC<FilterModalProps> = ({
             {/* Icons Grid */}
             <div className="flex flex-wrap gap-3">
               {[
-                { name: "Villa", icon: <Home size={18} /> },
-                { name: "Apartment", icon: <Building2 size={18} /> },
-                { name: "Shop", icon: <Store size={18} /> },
-                { name: "Industrial", icon: <Factory size={18} /> },
-                { name: "Office", icon: <Briefcase size={18} /> },
+                { name: "HOUSE_VILLA", icon: <Home size={18} /> },
+                { name: "APARTMENT", icon: <Building2 size={18} /> },
+                { name: "STUDIO", icon: <Store size={18} /> },
+                { name: "PG", icon: <Factory size={18} /> },
+                { name: "COMMERCIAL_BUILDING", icon: <Briefcase size={18} /> },
+                { name: "COMMERCIAL_PROJECT", icon: <Building2Icon size={18} /> },
+                { name: "COWORKING_SPACE", icon: <Building size={18} /> },
+                { name: "SHOP_ROOM", icon: <ShoppingBag size={18} /> },
               ].map((type) => (
                 <button
                   key={type.name}
@@ -388,7 +394,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             onClick={handleApply}
             className="px-6 md:px-10 py-3 md:py-4 bg-black text-white rounded-full font-bold text-sm hover:bg-gray-800 transition-all shadow-xl shadow-black/10"
           >
-            Show 287 results
+            Show results
           </button>
         </div>
       </div>

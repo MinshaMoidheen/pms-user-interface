@@ -3,7 +3,7 @@ export type PropertyCategory =
   | 'HOUSE_VILLA' 
   | 'APARTMENT' 
   | 'STUDIO' 
-  | 'PG' 
+  | ' ' 
   | 'COMMERCIAL_BUILDING' 
   | 'COMMERCIAL_PROJECT'
   | 'COWORKING_SPACE'
@@ -79,5 +79,13 @@ export interface getPropertyByIdResponse {
   message: string;
   data: {
     property: IProperty;
+  }
+}
+
+export interface getSimilarPropertiesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    properties: IProperty[];
   }
 }
