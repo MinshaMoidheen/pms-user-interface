@@ -24,7 +24,7 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <section className="relative pt-12 pb-2 md:pb-24 overflow-hidden min-h-[600px] md:min-h-screen">
+    <section className="relative pt-12 overflow-hidden min-h-[450px] md:min-h-screen">
       {/* Background Image - No overlay */}
       <div
         className="absolute inset-0 z-0"

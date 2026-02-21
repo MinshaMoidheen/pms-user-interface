@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Heart, Star, MapPin } from "lucide-react";
 import { IProperty } from "@/types/properties";
+import { useRouter } from "next/router";
 
 interface PropertyCardProps {
   property: IProperty;
@@ -8,14 +9,18 @@ interface PropertyCardProps {
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const router = useRouter();
 
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsLiked(!isLiked);
   };
+    
 
   return (
-    <div className="group cursor-pointer">
+    <div
+     onClick={() => router.push(`/rentals/${property._id}`)}
+     className="group cursor-pointer">
       <div className="relative aspect-4/3 rounded-2xl overflow-hidden mb-3">
         <img
           src={property.images?.[0] || "/placeholder.jpg"}

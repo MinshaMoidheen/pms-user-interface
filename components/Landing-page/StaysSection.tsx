@@ -56,7 +56,7 @@ const StaysSection: React.FC<StaysSectionProps> = ({ city }) => {
   const total = pagination?.total ?? 0;
 
   return (
-    <section className="py-12 bg-white">
+    <section className="md:py-12 sm:py-1 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex justify-between items-end mb-8">
           <div>

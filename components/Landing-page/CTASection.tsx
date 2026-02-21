@@ -3,7 +3,7 @@ import React from 'react';
 
 const CTASection: React.FC = () => {
   return (
-    <section className="py-20">
+    <section className="mb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="relative bg-[#FFEDEB] rounded-[40px] overflow-hidden flex flex-col md:flex-row items-center">
           <div className="p-8 md:p-16 flex-1">
