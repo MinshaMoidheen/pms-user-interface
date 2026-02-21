@@ -5,14 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, User } from "lucide-react";
 import ProfileModal from "./ProfileModal";
+import PlaceAnAdModal from "./PlaceAnAdModal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { openProfileModal, closeProfileModal } from "@/store/uiSlice";
+import { openProfileModal, closeProfileModal, openPlaceAnAdModal, closePlaceAnAdModal } from "@/store/uiSlice";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const isProfileModalOpen = useSelector((state: RootState) => state.ui.isProfileModalOpen);
+  const isPlaceAnAdModalOpen = useSelector((state: RootState) => state.ui.isPlaceAnAdModalOpen);
   const dispatch = useDispatch();
   const pathname = usePathname();
 
@@ -59,7 +61,7 @@ const Header: React.FC = () => {
               key={link.name}
               href={link.href}
               className={`px-4 py-2 rounded-full transition-colors whitespace-nowrap ${pathname === link.href
-                ? `${link.href === "/jobs" ? "bg-[#2D5BFF]" : "bg-[#FF5A3C]" } text-white`
+                ? `${link.href === "/jobs" ? "bg-[#FF5A3C]" : "bg-[#FF5A3C]"} text-white`
                 : "hover:text-slate-900"
                 }`}
             >
@@ -74,12 +76,18 @@ const Header: React.FC = () => {
           <div className="hidden md:flex items-center gap-4">
             {isLoggedIn ? (
               <>
-                <button className="bg-[#2D5BFF] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap">
+                <Link
+                  href="/for-sale"
+                  className="bg-[#2D5BFF] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap"
+                >
                   List Property
-                </button>
-                <button className="bg-[#FF5A3C] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-orange-600 transition-colors whitespace-nowrap">
+                </Link>
+                <Link
+                  href="/jobs"
+                  className="bg-[#FF5A3C] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-orange-600 transition-colors whitespace-nowrap"
+                >
                   List Jobs
-                </button>
+                </Link>
                 <button
                   onClick={() => dispatch(openProfileModal())}
                   className="p-2.5 rounded-full bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
@@ -144,12 +152,20 @@ const Header: React.FC = () => {
           <div className="flex flex-col gap-3">
             {isLoggedIn ? (
               <>
-                <button className="w-full bg-[#2D5BFF] text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors">
+                <Link
+                  href="/for-sale"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full bg-[#2D5BFF] text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors text-center"
+                >
                   List Property
-                </button>
-                <button className="w-full bg-[#FF5A3C] text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors">
+                </Link>
+                <Link
+                  href="/jobs"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full bg-[#FF5A3C] text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors text-center"
+                >
                   List Jobs
-                </button>
+                </Link>
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
@@ -188,6 +204,12 @@ const Header: React.FC = () => {
       <ProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => dispatch(closeProfileModal())}
+      />
+
+      {/* Place An Ad Modal */}
+      <PlaceAnAdModal
+        isOpen={isPlaceAnAdModalOpen}
+        onClose={() => dispatch(closePlaceAnAdModal())}
       />
     </header>
   );
