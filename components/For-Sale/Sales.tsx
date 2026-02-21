@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { SlidersHorizontal, Calendar, ChevronDown } from 'lucide-react';
+import { SlidersHorizontal, Calendar, ChevronDown, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import Header from '../Common/Header';
 import SalesCard from './SalesCard';
@@ -9,105 +9,96 @@ import MapViewSales from './MapViewSales';
 import Footer from '../Common/Footer';
 import DateRangePickerModal from '../Rentals/DateRangePickerModal';
 import FilterModal from './FilterModal';
+import { GetPropertiesParams, useGetPropertiesQuery } from '@/store/services/propertiesApiSlice';
 
-export interface Sales {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  currency: string;
-  discount?: string;
-  dates: string;
-  rating: number;
-  reviews: number;
-  imageUrl: string;
-  lat: number;
-  lng: number;
-}
 
-export const SALES: Sales[] = [
-  {
-    id: "1",
-    title: "Luxury 3BHK Apartment",
-    description: "Premium apartment with modern amenities",
-    price: 8500000,
-    currency: "₹",
-    discount: "20% off",
-    dates: "May 23 - June 15",
-    rating: 4.5,
-    reviews: 128,
-    imageUrl: "/images/property1.jpg",
-    lat: 12.9716,
-    lng: 77.5946
-  },
-  {
-    id: "2",
-    title: "Cozy 2BHK Villa",
-    description: "Peaceful villa with garden view",
-    price: 5500000,
-    currency: "₹",
-    dates: "May 23 - June 15",
-    rating: 4.2,
-    reviews: 89,
-    imageUrl: "/images/property2.jpg",
-    lat: 12.9719,
-    lng: 77.5935
-  },
-  {
-    id: "3",
-    title: "Modern Studio Apartment",
-    description: "Perfect for singles and couples",
-    price: 3500000,
-    currency: "₹",
-    discount: "15% off",
-    dates: "May 23 - June 15",
-    rating: 4.7,
-    reviews: 56,
-    imageUrl: "/images/property3.jpg",
-    lat: 12.9725,
-    lng: 77.5912
-  },
-  {
-    id: "4",
-    title: "Penthouse with Terrace",
-    description: "Luxurious penthouse with city view",
-    price: 12500000,
-    currency: "₹",
-    dates: "May 23 - June 15",
-    rating: 4.8,
-    reviews: 42,
-    imageUrl: "/images/property4.jpg",
-    lat: 12.9705,
-    lng: 77.5955
-  }
-];
 
 const Sales = () => {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({
-    startDate: new Date(2026, 4, 23), // May 23
-    endDate: new Date(2026, 5, 15),   // June 15
-  });
+ const [dateRange, setDateRange] = useState<{
+     startDate: Date | null;
+     endDate: Date | null;
+   }>({
+     startDate: new Date(2026, 4, 23), // May 23
+     endDate: new Date(2026, 5, 15), // June 15
+   });
 
-  const handleApplyFilters = (filters: any) => {
-    console.log("Applied filters:", filters);
-    setIsFilterModalOpen(false);
-  };
-
-  const handleApplyDates = (range: { startDate: Date | null; endDate: Date | null }) => {
-    setDateRange(range);
-    setIsDatePickerOpen(false);
-  };
-
-  const formatDateRange = () => {
-    if (!dateRange.startDate) return "Select Dates";
-    const startStr = dateRange.startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    if (!dateRange.endDate) return `${startStr} - ...`;
-    const endStr = dateRange.endDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    return `${startStr} - ${endStr}`;
-  };
+  const [appliedFilters, setAppliedFilters] = useState<any>(null);
+ 
+   const [page, setPage] = useState(0);
+   const [limit, setLimit] = useState(6);
+   const [search, setSearch] = useState("");
+   const [type, setType] = useState<GetPropertiesParams["type"]>("SALE");
+   const [category, setCategory] =
+     useState<GetPropertiesParams["category"]>(undefined);
+   const [filterCity, setFilterCity] =
+     useState<GetPropertiesParams["city"]>(undefined);
+ 
+   const params: GetPropertiesParams = {
+     page: page + 1,
+     limit,
+     ...(search && { search }),
+     ...(type && { type }),
+     ...(category && { category }),
+     ...(filterCity && { city: filterCity }),
+     ...(dateRange.startDate && {
+       startDate: dateRange.startDate.toISOString(),
+     }),
+     ...(dateRange.endDate && { endDate: dateRange.endDate.toISOString() }),
+     ...(appliedFilters?.rooms !== "Any" && { rooms: appliedFilters?.rooms }),
+     ...(appliedFilters?.beds !== "Any" && { beds: appliedFilters?.beds }),
+     ...(appliedFilters?.bathrooms !== "Any" && {
+       bathrooms: appliedFilters?.bathrooms,
+     }),
+     ...(appliedFilters?.areaRange?.min && {
+       minArea: appliedFilters.areaRange.min,
+     }),
+     ...(appliedFilters?.areaRange?.max && {
+       maxArea: appliedFilters.areaRange.max,
+     }),
+     ...(appliedFilters?.amenities?.length > 0 && {
+       amenities: appliedFilters.amenities,
+     }),
+   };
+ 
+   const { data, isLoading, isError, error } = useGetPropertiesQuery(params);
+ 
+   const SALES = data?.data?.properties ?? [];
+   const pagination = data?.data?.pagination;
+   const total = pagination?.total ?? 0;
+   const totalPages = pagination?.totalPages ?? 0;
+ 
+   // Handle filter apply
+   const handleApplyFilters = (filters: any) => {
+     setAppliedFilters(filters);
+     setIsFilterModalOpen(false);
+     setPage(0); // Reset to first page when filters change
+   };
+ 
+   const handleApplyDates = (range: {
+     startDate: Date | null;
+     endDate: Date | null;
+   }) => {
+     setDateRange(range);
+     setIsDatePickerOpen(false);
+     setPage(0); // Reset to first page when dates change
+   };
+ 
+   const formatDateRange = () => {
+     if (!dateRange.startDate) return "Select Dates";
+     const startStr = dateRange.startDate.toLocaleDateString("en-US", {
+       month: "short",
+       day: "numeric",
+     });
+     if (!dateRange.endDate) return `${startStr} - ...`;
+     const endStr = dateRange.endDate.toLocaleDateString("en-US", {
+       month: "short",
+       day: "numeric",
+     });
+     return `${startStr} - ${endStr}`;
+   };
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -124,9 +115,7 @@ const Sales = () => {
         initialRange={dateRange}
       />
 
-      <Header />
-
-      <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12 mt-14">
+      <main className="grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12 mt-14">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div className="space-y-2">
@@ -187,9 +176,50 @@ const Sales = () => {
         <div className="flex flex-col lg:flex-row gap-8 min-h-[600px]">
           {/* Properties List - Hidden on mobile when map view is active */}
           <div className={`w-full lg:w-1/2 ${viewMode === 'map' ? 'hidden lg:block' : 'block'}`}>
+              {isLoading ? (
+              <div className="flex flex-col items-center justify-center h-[400px] text-gray-500 gap-3">
+                <Loader2 className="animate-spin" size={40} />
+                <p className="font-medium text-lg">
+                  Finding the best places for you...
+                </p>
+              </div>
+            ) : isError ? (
+              <div className="flex flex-col items-center justify-center h-[400px] text-red-500 text-center gap-4">
+                <p className="font-bold text-xl text-gray-900">
+                  Oops! Something went wrong.
+                </p>
+                <p className="text-gray-500 max-w-xs capitalize">
+                  {(error as any)?.data?.message ||
+                    "Failed to load properties. Please try again later."}
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-6 py-2 bg-[#FF5A3C] text-white rounded-full font-bold shadow-lg shadow-orange-200 hover:bg-[#ff4a2d] transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : SALES.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 text-center">
+                <p className="font-bold text-xl text-gray-900 mb-2">
+                  No properties found
+                </p>
+                <p className="mb-4">
+                  Try adjusting your filters or search terms
+                </p>
+                <button
+                  onClick={() => setIsFilterModalOpen(true)}
+                  className="px-6 py-2 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors"
+                >
+                  Adjust Filters
+                </button>
+              </div>
+            ) : (
+              <>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-10">
               {SALES.map(sales => (
-                <SalesCard key={sales.id} sales={sales} />
+                <SalesCard key={sales._id} sales={sales} />
               ))}
             </div>
 
@@ -199,6 +229,47 @@ const Sales = () => {
                 Load More Properties
               </button>
             </div>
+
+            {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-16 border-t border-gray-100 pt-10">
+                    <button
+                      onClick={() => setPage((p) => Math.max(0, p - 1))}
+                      disabled={page === 0}
+                      className="p-2.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {[...Array(totalPages)].map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setPage(i)}
+                          className={`w-10 h-10 rounded-full font-bold transition-all ${
+                            page === i
+                              ? "bg-gray-900 text-white shadow-md"
+                              : "text-gray-600 hover:bg-gray-100"
+                          }`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages - 1, p + 1))
+                      }
+                      disabled={page === totalPages - 1}
+                      className="p-2.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {/* Map View - Hidden on mobile when list view is active */}
@@ -211,7 +282,6 @@ const Sales = () => {
         <div className="h-24 md:hidden" />
       </main>
 
-      <Footer />
     </div>
   );
 };

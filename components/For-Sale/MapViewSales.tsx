@@ -2,25 +2,10 @@
 
 import React from 'react';
 import { Maximize2, Plus, Minus } from 'lucide-react';
-
-// Import the Sales interface from your Sales component or define it here
-interface Sales {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  currency: string;
-  discount?: string;
-  dates: string;
-  rating: number;
-  reviews: number;
-  imageUrl: string;
-  lat: number;
-  lng: number;
-}
+import { IProperty } from '@/types/properties';
 
 interface MapViewSalesProps {
-  sales: Sales[]; // Accept sales data as props
+  sales: IProperty[]; // Accept sales data as props
 }
 
 const MapViewSales: React.FC<MapViewSalesProps> = ({ sales }) => {

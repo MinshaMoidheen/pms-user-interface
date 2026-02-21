@@ -24,90 +24,27 @@ import {
   Dumbbell,
   Droplets,
   Trophy,
+  Ruler,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useGetPropertyQuery } from "@/store/services/propertiesApiSlice";
+import { useParams, useRouter } from "next/navigation";
+import { useGetPropertyByIdQuery } from "@/store/services/propertiesApiSlice";
 import Header from "../Common/Header";
 import Link from "next/link";
 import Footer from "../Common/Footer";
 import FeaturedProperties from "../Landing-page/FeaturedProperties";
-import { SALES } from "./Sales";
 import { IProperty } from "@/types/properties";
 
 interface PropertyDetailProps {
   id: string;
 }
 
-const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
+const PropertyDetail: React.FC<PropertyDetailProps> = () => {
   const router = useRouter();
-  const { data: property, isLoading, isError } = useGetPropertyQuery(id);
+  const { id } = useParams();
+  const { data: property, isLoading, isError } = useGetPropertyByIdQuery(id as string);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Mock data for development if API returns incomplete data
-  // const property = data;
-
-  // Check if we have static data for this ID
-  const staticSale = SALES.find((s) => s.id === id);
-
-  // Construct a compatible property object from static data if available
-  const displayedProperty: IProperty | undefined =
-    property ||
-    (staticSale
-      ? ({
-          _id: staticSale.id,
-          title: staticSale.title,
-          description:
-            "Experience modern living in this beautifully designed studio apartment, located in the vibrant neighborhood of Bommanahalli. This unit offers a perfect blend of comfort and style, featuring large windows that flood the space with natural light and a balcony with stunning views of the surrounding area.\n\nThe space\nThis brand new apartment is ready to be moved into and comes with premium finishes, high-end fixtures, and all the necessary appliances. Whether you're a young professional or a small family, this space provides the perfect urban retreat with its clever layout and excellent use of space.",
-          price: 5010900,
-          priceUnit: "Est Settlement Value",
-          type: "Apartment",
-          category: "Residential",
-          location: {
-            address: "Bommanahalli",
-            city: "Bangalore",
-            state: "Karnataka",
-            coordinates: {
-              latitude: staticSale.lat || 12.9023,
-              longitude: staticSale.lng || 77.6242,
-            },
-          },
-          area: {
-            value: 1200,
-            unit: "sqft",
-          },
-          flexibleFields: {
-            bedrooms: 2,
-            bathrooms: 2,
-            furnishing: "Fully Furnished",
-            parking: "1 Private",
-            floor: "5th of 12",
-            facing: "East",
-          },
-          images: [
-            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=2070",
-            "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=2071",
-            "https://images.unsplash.com/photo-1613977252468-91776a97964a?auto=format&fit=crop&q=80&w=2070",
-            "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&q=80&w=2070",
-            "https://images.unsplash.com/photo-1512918766673-45520e189871?auto=format&fit=crop&q=80&w=2070",
-            "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=2070",
-          ],
-          contact: {
-            name: "Rohit Mishra",
-            call: "+91 9876543210",
-            mobileNumber: "+91 9876543210",
-            email: "rohit@example.com",
-            whatsapp: "https://wa.me/919876543210",
-            whatsappNumber: "919876543210",
-          },
-          postedBy: "Verified Property",
-          createdBy: "admin",
-          isDeleted: { status: false },
-          isFeatured: false,
-          views: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as IProperty)
-      : undefined);
+  const displayedProperty = property?.data?.property;
 
   const [showMore, setShowMore] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -133,6 +70,8 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
       </div>
     );
   }
+
+  const SALES : any[] = [];
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
@@ -167,7 +106,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-2 md:gap-4 mb-8 md:mb-10 overflow-hidden rounded-2xl md:rounded-3xl">
-          <div className="md:col-span-2 aspect-[4/3] md:aspect-auto h-full min-h-[400px]">
+          <div className="md:col-span-2 aspect-4/3 md:aspect-auto h-full min-h-[400px]">
             <img
               src={displayedProperty.images[0]}
               alt="Main view"
@@ -178,7 +117,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
             {displayedProperty.images.slice(1, 5).map((img, idx) => (
               <div
                 key={idx}
-                className="relative aspect-[4/3] group cursor-pointer overflow-hidden rounded-lg md:rounded-xl"
+                className="relative aspect-4/3 group cursor-pointer overflow-hidden rounded-lg md:rounded-xl"
               >
                 <img
                   src={img}
@@ -226,7 +165,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Maximize size={20} className="text-gray-400" />
+                  <Ruler size={20} className="text-gray-400 rotate-90" />
                   <span className="text-sm font-semibold">
                     {displayedProperty.area.value} {displayedProperty.area.unit}
                   </span>
@@ -235,7 +174,8 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
                   <MapPin size={18} />
                   <span className="text-sm">
                     {displayedProperty.location.address},{" "}
-                    {displayedProperty.location.city}
+                    {displayedProperty.location.city},{" "}
+                    {displayedProperty.location.state}
                   </span>
                 </div>
               </div>
@@ -244,7 +184,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
             {/* Compact Agent Card */}
             <div className="flex flex-col sm:flex-row items-center justify-between p-4 md:p-6 bg-white border border-gray-100 rounded-2xl md:rounded-[32px] shadow-sm gap-4">
               <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                   <img
                     src="https://randomuser.me/api/portraits/men/32.jpg"
                     alt="Agent"
@@ -330,7 +270,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4">
                 {[
                   { label: "Type", value: displayedProperty.type },
-                  { label: "Purpose", value: "Sale" },
+                  { label: "Purpose", value: displayedProperty.type },
                   { label: "Property Age", value: "1 year" },
                   {
                     label: "Furnishing",
@@ -339,9 +279,9 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
                       "Fully Furnished",
                   },
                   { label: "Average Mortage", value: "₹ 10,00,000" },
-                  { label: "Plot", value: "450 sqft" },
+                  { label: "Plot", value: `${displayedProperty.area.value} ${displayedProperty.area.unit}` },
                   { label: "Completion Status", value: "Ready" },
-                  { label: "Updated", value: "16/02/26" },
+                  { label: "Updated", value: new Date(displayedProperty.updatedAt).toLocaleDateString() },
                 ].map((detail, idx) => (
                   <div
                     key={idx}
@@ -420,7 +360,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
               <h3 className="text-xl md:text-2xl font-bold text-[#1E293B] flex items-center gap-3">
                 <CheckCircle
                   size={24}
-                  className="text-[#3B82F6] md:w-7 md:h-7 fill-[#3B82F6] text-white"
+                  className="text-[#3B82F6] md:w-7 md:h-7 fill-[#3B82F6]"
                 />
                 Validated Information
               </h3>
@@ -695,7 +635,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ id }) => {
                 onClick={() => router.push(`/for-sale/${sale.id}`)}
                 className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
               >
-                <div className="relative aspect-[4/3] overflow-hidden">
+                <div className="relative aspect-4/3 overflow-hidden">
                   <img
                     src={sale.imageUrl}
                     alt={sale.title}

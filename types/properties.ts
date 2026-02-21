@@ -73,3 +73,11 @@ export interface getPropertiesResponse {
         };
     };
 }
+
+export interface getPropertyByIdResponse {
+  success: boolean;
+  message: string;
+  data: {
+    property: IProperty;
+  }
+}

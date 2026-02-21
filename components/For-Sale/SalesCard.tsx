@@ -1,32 +1,32 @@
 import React from "react";
 import { Heart, Star } from "lucide-react";
-import { Sales } from "./Sales";
+import { IProperty } from "@/types/properties";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface SalesCardProps {
-  sales: Sales;
+  sales: IProperty;
 }
 
 const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
   const router = useRouter();
   return (
     <div
-      onClick={() => router.push(`/for-sale/${sales.id}`)}
+      onClick={() => router.push(`/for-sale/${sales._id}`)}
       className="block group cursor-pointer"
     >
       <div className="relative aspect-4/3 rounded-2xl overflow-hidden mb-3">
         <img
-          src={sales.imageUrl}
+          src={sales.images[0]}
           alt={sales.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        {sales.discount && (
+        {/* {sales.discount && (
           <div className="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-md uppercase tracking-wider">
             {sales.discount}
           </div>
-        )}
+        )} */}
         <button className="absolute top-4 right-4 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors">
           <Heart size={20} className="fill-transparent stroke-white" />
         </button>
@@ -42,13 +42,13 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
 
         <div className="flex items-baseline gap-1 pt-1">
           <span className="text-xl font-bold text-gray-900">
-            {sales.currency}
+         
             {sales.price}
           </span>
-          <span className="text-sm text-gray-500 font-medium">/ per night</span>
+          <span className="text-sm text-gray-500 font-medium">/{sales.priceUnit}</span>
         </div>
 
-        <p className="text-sm text-gray-500 font-medium">{sales.dates}</p>
+        {/* <p className="text-sm text-gray-500 font-medium">{sales.dates}</p>
 
         <div className="flex items-center gap-1 pt-1">
           <div className="flex gap-0.5">
@@ -67,7 +67,7 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
           <span className="text-sm font-semibold text-gray-900 ml-1">
             ({sales.reviews})
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
   );

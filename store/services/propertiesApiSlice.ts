@@ -3,6 +3,7 @@ import { PROPERTIES_URL } from "../constants";
 
 import type {
   getPropertiesResponse,
+  getPropertyByIdResponse,
   IProperty,
   PropertyCategory,
   PropertyType,
@@ -91,12 +92,12 @@ const propertiesApiSlice = apiSlice.injectEndpoints({
           : [{ type: "Properties", id: "LIST" }],
     }),
 
-    getProperty: builder.query<IProperty, string>({
+    getPropertyById: builder.query<getPropertyByIdResponse, string | undefined>({
       query: (id) => ({ url: `${PROPERTIES_URL}/${id}` }),
       providesTags: (result, error, id) => [{ type: "Properties", id }],
     }),
   }),
 });
 
-export const { useGetPropertiesQuery, useGetPropertyQuery } =
+export const { useGetPropertiesQuery, useGetPropertyByIdQuery } =
   propertiesApiSlice;
