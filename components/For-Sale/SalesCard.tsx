@@ -1,5 +1,18 @@
 import React from "react";
-import { Heart, Star, Share2, MapPin, Bed, Bath, Maximize2, ChevronLeft, ChevronRight, Mail, Phone, MessageCircle } from "lucide-react";
+import {
+  Heart,
+  Star,
+  Share2,
+  MapPin,
+  Bed,
+  Bath,
+  Maximize2,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  Phone,
+  MessageCircle,
+} from "lucide-react";
 import { IProperty } from "@/types/properties";
 import { useRouter } from "next/navigation";
 
@@ -19,7 +32,10 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
 
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev - 1 + (sales.images.length || 1)) % (sales.images.length || 1));
+    setCurrentImageIndex(
+      (prev) =>
+        (prev - 1 + (sales.images.length || 1)) % (sales.images.length || 1),
+    );
   };
 
   const handleSave = (e: React.MouseEvent) => {
@@ -34,7 +50,7 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
     >
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Side: Image Carousel Area */}
-        <div className="relative w-full md:w-[320px] aspect-[4/3] rounded-[2rem] overflow-hidden shrink-0">
+        <div className="relative w-full md:w-[320px] aspect-4/3 rounded-[2rem] overflow-hidden shrink-0">
           <img
             src={sales.images[currentImageIndex] || "/images/placeholder.png"}
             alt={sales.title}
@@ -51,10 +67,11 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
           {/* Heart/Bookmark */}
           <button
             onClick={handleSave}
-            className={`absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md transition-all ${isSaved
-              ? "bg-red-500 text-white opacity-100"
-              : "bg-white/30 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-white hover:text-red-500"
-              }`}
+            className={`absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md transition-all ${
+              isSaved
+                ? "bg-red-500 text-white opacity-100"
+                : "bg-white/30 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-white hover:text-red-500"
+            }`}
           >
             <Heart size={20} className={isSaved ? "fill-white" : ""} />
           </button>
@@ -80,8 +97,11 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
             {sales.images.map((_, idx) => (
               <div
                 key={idx}
-                className={`w-1.5 h-1.5 rounded-full transition-all ${idx === currentImageIndex ? "bg-white scale-125" : "bg-white/50"
-                  }`}
+                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                  idx === currentImageIndex
+                    ? "bg-white scale-125"
+                    : "bg-white/50"
+                }`}
               />
             ))}
           </div>
@@ -102,7 +122,9 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
                   /{sales.priceUnit || "total"}
                 </span>
               </div>
-              <p className="text-slate-400 font-semibold mb-3">Apartment</p>
+              <p className="text-slate-400 font-semibold mb-3">
+                {sales?.category}
+              </p>
             </div>
 
             {/* Rating - Hidden on mobile, shown on desktop */}
@@ -112,11 +134,15 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
                   <Star
                     key={i}
                     size={14}
-                    className={i < 5 ? "fill-[#FBBC05] text-[#FBBC05]" : "text-slate-200"}
+                    className={
+                      i < 5 ? "fill-[#FBBC05] text-[#FBBC05]" : "text-slate-200"
+                    }
                   />
                 ))}
               </div>
-              <span className="text-sm font-bold text-slate-900 ml-1">(25)</span>
+              <span className="text-sm font-bold text-slate-900 ml-1">
+                (25)
+              </span>
             </div>
           </div>
 
@@ -124,21 +150,23 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
           <div className="flex flex-wrap items-center gap-4 text-slate-500 font-medium text-sm mb-4">
             <div className="flex items-center gap-2">
               <Bed size={18} className="text-slate-400" />
-              <span>2 Bedroom</span>
+              <span> {sales.flexibleFields?.bedrooms} Bedroom</span>
             </div>
             <div className="flex items-center gap-2">
               <Bath size={18} className="text-slate-400" />
-              <span>3 Baths</span>
+              <span> {sales.flexibleFields?.bathrooms} Baths</span>
             </div>
             <div className="flex items-center gap-2">
               <Maximize2 size={18} className="text-slate-400" />
-              <span>1,126 sqft</span>
+              <span>
+                {sales.area.value} {sales.area.unit}
+              </span>
             </div>
           </div>
 
           {/* Tagline/Description */}
           <p className="text-slate-900 font-bold mb-3 line-clamp-1">
-            Exclusive Unit | Ample Parking Area | Near Transit, Schools & Shops
+            {sales.description}
           </p>
 
           {/* Address & Rating (Mobile) */}
@@ -146,7 +174,8 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
             <div className="flex items-start gap-2 text-slate-450 text-sm max-w-sm">
               <MapPin size={18} className="shrink-0 mt-0.5 text-[#FF5A3C]" />
               <span className="line-clamp-2 leading-relaxed text-slate-500 font-medium">
-                213, 9th Main Rd, HRBR Layout 1st Block, Banaswadi, Bengaluru, Karnataka 560043
+                {sales.location.address}, {sales.location.city},{" "}
+                {sales.location.state}, {sales.location.pincode}
               </span>
             </div>
 
@@ -157,25 +186,44 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
                   <Star
                     key={i}
                     size={14}
-                    className={i < 5 ? "fill-[#FBBC05] text-[#FBBC05]" : "text-slate-200"}
+                    className={
+                      i < 5 ? "fill-[#FBBC05] text-[#FBBC05]" : "text-slate-200"
+                    }
                   />
                 ))}
               </div>
-              <span className="text-sm font-bold text-slate-900 ml-1">(25)</span>
+              <span className="text-sm font-bold text-slate-900 ml-1">
+                (25)
+              </span>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-3 mt-auto">
-            <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#2D5BFF] hover:bg-blue-700 text-white py-3 rounded-2xl text-sm font-bold transition-all transform active:scale-95">
+            <button
+              onClick={() =>
+                (window.location.href = `mailto:${sales.contact.email}`)
+              }
+              className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#2D5BFF] hover:bg-blue-700 text-white py-3 rounded-2xl text-sm font-bold transition-all transform active:scale-95"
+            >
               <Mail size={18} />
               Email
             </button>
-            <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#FFEBEE] hover:bg-red-100 text-[#FF5A3C] py-3 rounded-2xl text-sm font-bold transition-all transform active:scale-95">
+            <button
+              onClick={() =>
+                (window.location.href = `tel:${sales.contact.mobileNumber}`)
+              }
+              className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#FFEBEE] hover:bg-red-100 text-[#FF5A3C] py-3 rounded-2xl text-sm font-bold transition-all transform active:scale-95"
+            >
               <Phone size={18} />
               Call
             </button>
-            <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#E8F5E9] hover:bg-green-100 text-[#22C55E] py-3 rounded-2xl text-sm font-bold transition-all transform active:scale-95">
+            <button
+              onClick={() =>
+                (window.location.href = `${sales.contact.whatsapp}`)
+              }
+              className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#E8F5E9] hover:bg-green-100 text-[#22C55E] py-3 rounded-2xl text-sm font-bold transition-all transform active:scale-95"
+            >
               <MessageCircle size={18} />
               Whatsapp
             </button>

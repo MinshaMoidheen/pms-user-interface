@@ -1,55 +1,75 @@
 "use client";
 
-import React, { useState } from 'react';
-import { SlidersHorizontal, Calendar, ChevronDown, Loader2, ChevronLeft, ChevronRight, Share2, Bookmark, Search, MapPin, X } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  SlidersHorizontal,
+  Calendar,
+  ChevronDown,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Share2,
+  Bookmark,
+  Search,
+  MapPin,
+  X,
+} from "lucide-react";
 
-import Header from '../Common/Header';
-import SalesCard from './SalesCard';
-import MapViewSales from './MapViewSales';
-import Footer from '../Common/Footer';
-import CTASection from '../Landing-page/CTASection';
-import DateRangePickerModal from '../Rentals/DateRangePickerModal';
-import FilterModal from './FilterModal';
-import { GetPropertiesParams, useGetPropertiesQuery } from '@/store/services/propertiesApiSlice';
+import Header from "../Common/Header";
+import SalesCard from "./SalesCard";
+import MapViewSales from "./MapViewSales";
+import Footer from "../Common/Footer";
+import CTASection from "../Landing-page/CTASection";
+import DateRangePickerModal from "../Rentals/DateRangePickerModal";
+import FilterModal from "./FilterModal";
+import {
+  GetPropertiesParams,
+  useGetPropertiesQuery,
+} from "@/store/services/propertiesApiSlice";
 
-import { useRouter } from 'next/navigation';
-import PriceRangeSlider from './PriceRangeSlider';
+import { useRouter } from "next/navigation";
+import PriceRangeSlider from "./PriceRangeSlider";
 
 const Sales = () => {
   const router = useRouter();
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [dateRange, setDateRange] = useState<{
     startDate: Date | null;
     endDate: Date | null;
   }>({
-    startDate: new Date(2026, 0, 1),
-    endDate: new Date(2026, 11, 31),
+    startDate: null,
+    endDate: null,
   });
 
   const [appliedFilters, setAppliedFilters] = useState<any>(null);
-  const [sortBy, setSortBy] = useState<'highest' | 'lowest'>('highest');
-  const [priceRange, setPriceRange] = useState([2500000, 30000000]);
+  const [sortBy, setSortBy] = useState<"highest" | "lowest">("highest");
+  const [priceRange, setPriceRange] = useState([0, 30000000]);
 
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(6);
   const [search, setSearch] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
   const [type, setType] = useState<GetPropertiesParams["type"]>("SALE");
-  const [category, setCategory] = useState<GetPropertiesParams["category"]>(undefined);
-  const [filterCity, setFilterCity] = useState<GetPropertiesParams["city"]>(undefined);
+  const [category, setCategory] =
+    useState<GetPropertiesParams["category"]>(undefined);
+  const [filterCity, setFilterCity] =
+    useState<GetPropertiesParams["city"]>(undefined);
 
   const params: GetPropertiesParams = {
     page: page + 1,
     limit,
-    ...(search && { search }),
+    ...(appliedSearch && { search: appliedSearch }),
     ...(type && { type }),
     ...(category && { category }),
     ...(filterCity && { city: filterCity }),
-    ...(dateRange.startDate && {
-      startDate: dateRange.startDate.toISOString(),
-    }),
-    ...(dateRange.endDate && { endDate: dateRange.endDate.toISOString() }),
+    minPrice: priceRange[0],
+    maxPrice: priceRange[1],
+    // ...(dateRange.startDate && {
+    //   startDate: dateRange.startDate.toISOString(),
+    // }),
+    // ...(dateRange.endDate && { endDate: dateRange.endDate.toISOString() }),
     ...(appliedFilters?.rooms !== "Any" && { rooms: appliedFilters?.rooms }),
     ...(appliedFilters?.beds !== "Any" && { beds: appliedFilters?.beds }),
     ...(appliedFilters?.bathrooms !== "Any" && {
@@ -64,15 +84,22 @@ const Sales = () => {
     ...(appliedFilters?.amenities?.length > 0 && {
       amenities: appliedFilters.amenities,
     }),
+    ...(appliedFilters?.type?.length > 0 && {
+      category: appliedFilters.type[0],
+    }),
   };
 
   const { data, isLoading, isError, error } = useGetPropertiesQuery(params);
 
-  const SALES = data?.data?.properties ?? [];
+  const rawProperties = data?.data?.properties ?? [];
   const pagination = data?.data?.pagination;
-   const total = pagination?.total ?? 0;
-  
+  const total = pagination?.total ?? 0;
   const totalPages = pagination?.totalPages ?? 0;
+
+  const SALES = [...rawProperties].sort((a, b) => {
+    if (sortBy === "highest") return b.price - a.price;
+    return a.price - b.price;
+  });
 
   const handleApplyFilters = (filters: any) => {
     setAppliedFilters(filters);
@@ -89,11 +116,96 @@ const Sales = () => {
     setPage(0);
   };
 
+  const handleSearch = () => {
+    setAppliedSearch(search);
+    setPage(0);
+  };
+
+  const removeFilter = (key: string) => {
+    switch (key) {
+      case "city":
+        setFilterCity(undefined);
+        setSearch("");
+        setAppliedSearch("");
+        break;
+      case "date":
+        setDateRange({ startDate: null, endDate: null });
+        break;
+      case "price":
+        setPriceRange([0, 50000000]);
+        break;
+      case "rooms":
+      case "beds":
+      case "bathrooms":
+      case "minArea":
+      case "maxArea":
+      case "amenities":
+      case "type":
+        if (appliedFilters && key in appliedFilters) {
+          const newFilters = { ...appliedFilters };
+          if (key === "amenities" || key === "type") {
+            newFilters[key] = []; // Clear array for amenities/type
+          } else {
+            delete newFilters[key];
+          }
+          setAppliedFilters(newFilters);
+        }
+        break;
+      default:
+        // For any other filter key that might be added
+        if (appliedFilters && key in appliedFilters) {
+          const newFilters = { ...appliedFilters };
+          delete newFilters[key];
+          setAppliedFilters(newFilters);
+        }
+    }
+    setPage(0);
+  };
+
   const filterChips = [
-    { label: "Bangalore, Karnataka", active: true },
-    { label: "May 23 - June 15", active: true },
-    { label: "2 Beds", active: true },
-    { label: "Apartment", active: true },
+    ...(appliedSearch ? [{ label: appliedSearch, key: "search" }] : []),
+    ...(filterCity ? [{ label: filterCity, key: "city" }] : []),
+    ...(dateRange.startDate
+      ? [
+          {
+            label: `${dateRange.startDate.toLocaleDateString()} - ${dateRange.endDate?.toLocaleDateString()}`,
+            key: "date",
+          },
+        ]
+      : []),
+    ...(appliedFilters?.rooms && appliedFilters.rooms !== "Any"
+      ? [{ label: `${appliedFilters.rooms} Rooms`, key: "rooms" }]
+      : []),
+    ...(appliedFilters?.beds && appliedFilters.beds !== "Any"
+      ? [{ label: `${appliedFilters.beds} Beds`, key: "beds" }]
+      : []),
+    ...(appliedFilters?.bathrooms && appliedFilters.bathrooms !== "Any"
+      ? [{ label: `${appliedFilters.bathrooms} Baths`, key: "bathrooms" }]
+      : []),
+    ...(appliedFilters?.areaRange?.min && appliedFilters.areaRange.min > 500
+      ? [
+          {
+            label: `Area: ${appliedFilters.areaRange.min} - ${appliedFilters.areaRange.max} sqft`,
+            key: "area",
+          },
+        ]
+      : []),
+    ...(appliedFilters?.amenities?.length > 0
+      ? [
+          {
+            label: `${appliedFilters.amenities.length} Amenities`,
+            key: "amenities",
+          },
+        ]
+      : []),
+    ...(appliedFilters?.type?.length > 0
+      ? [
+          {
+            label: appliedFilters.type[0].replace(/_/g, " "),
+            key: "type",
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -114,7 +226,6 @@ const Sales = () => {
       />
 
       <main className="grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
-
         {/* Top Header Actions */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
@@ -126,8 +237,8 @@ const Sales = () => {
             </button>
             <div className="space-y-1">
               <h1 className="text-xl md:text-2xl font-bold text-slate-900">
-               {total} Places in <br className="md:hidden" />
-              {filterCity || "All"}
+                {total} Places in <br className="md:hidden" />
+                {filterCity || "All"}
               </h1>
               <p className="text-slate-400 text-sm font-medium">
                 Easily book site visits and search properties quickly.
@@ -147,11 +258,10 @@ const Sales = () => {
         {/* Search & Filter Bar */}
         <div className="bg-white rounded-[2.5rem] border border-slate-100 p-3 mb-8 shadow-sm">
           <div className="flex flex-col lg:flex-row items-center gap-4">
-
             {/* Price Slider Section */}
             <div className="w-full lg:w-[35%] px-4">
               <PriceRangeSlider
-              min={0}
+                min={0}
                 max={50000000}
                 step={50000}
                 value={priceRange as [number, number]}
@@ -171,6 +281,9 @@ const Sales = () => {
               <input
                 type="text"
                 placeholder="Bangalore, Karnataka"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 className="w-full pl-12 pr-4 py-3 bg-white outline-none text-slate-900 font-semibold placeholder:text-slate-400"
               />
             </div>
@@ -184,7 +297,10 @@ const Sales = () => {
                 <SlidersHorizontal size={18} />
                 Filter
               </button>
-              <button className="flex-1 lg:flex-none px-10 py-3 bg-[#FF5A3C] hover:bg-orange-600 text-white rounded-full font-bold transition-all shadow-lg shadow-orange-100">
+              <button
+                onClick={handleSearch}
+                className="flex-1 lg:flex-none px-10 py-3 bg-[#FF5A3C] hover:bg-orange-600 text-white rounded-full font-bold transition-all shadow-lg shadow-orange-100"
+              >
                 Search
               </button>
             </div>
@@ -197,6 +313,7 @@ const Sales = () => {
             {filterChips.map((chip, idx) => (
               <div
                 key={idx}
+                onClick={() => removeFilter(chip.key)}
                 className="flex items-center gap-2 px-5 py-2.5 bg-white border border-red-50 text-[#FF5A3C] rounded-full text-xs font-bold transition-colors cursor-pointer hover:bg-red-50"
               >
                 {chip.label}
@@ -207,14 +324,14 @@ const Sales = () => {
 
           <div className="bg-slate-50 p-1.5 rounded-full flex gap-1">
             <button
-              onClick={() => setSortBy('highest')}
-              className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${sortBy === 'highest' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
+              onClick={() => setSortBy("highest")}
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${sortBy === "highest" ? "bg-white text-slate-900 shadow-sm" : "text-slate-400"}`}
             >
               Highest Price
             </button>
             <button
-              onClick={() => setSortBy('lowest')}
-              className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${sortBy === 'lowest' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
+              onClick={() => setSortBy("lowest")}
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${sortBy === "lowest" ? "bg-white text-slate-900 shadow-sm" : "text-slate-400"}`}
             >
               Lowest Price
             </button>
@@ -226,12 +343,21 @@ const Sales = () => {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <Loader2 className="animate-spin text-[#2D5BFF]" size={40} />
-              <p className="font-bold text-slate-400">Finding the best properties...</p>
+              <p className="font-bold text-slate-400">
+                Finding the best properties...
+              </p>
             </div>
           ) : isError ? (
             <div className="text-center py-20 text-red-500">
-              <p className="font-bold text-xl mb-4">Oops! Something went wrong.</p>
-              <button onClick={() => window.location.reload()} className="text-[#FF5A3C] font-bold underline">Retry</button>
+              <p className="font-bold text-xl mb-4">
+                Oops! Something went wrong.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-[#FF5A3C] font-bold underline"
+              >
+                Retry
+              </button>
             </div>
           ) : SALES.length === 0 ? (
             <div className="text-center py-20 text-slate-400">
@@ -239,7 +365,7 @@ const Sales = () => {
               <p>Try adjusting your filters or search terms</p>
             </div>
           ) : (
-            SALES.map(property => (
+            SALES.map((property) => (
               <SalesCard key={property._id} sales={property} />
             ))
           )}
@@ -247,17 +373,18 @@ const Sales = () => {
 
         {/* Load More */}
         <div className="flex justify-center mb-24">
-          <button className="bg-[#2D5BFF] hover:bg-blue-700 text-white px-20 py-4 rounded-full font-bold shadow-xl shadow-blue-100 transition-all transform active:scale-95">
-            Load More
+          <button
+            onClick={() => setLimit((prev) => prev + 6)}
+            disabled={SALES.length >= total}
+            className="bg-[#2D5BFF] hover:bg-blue-700 text-white px-20 py-4 rounded-full font-bold shadow-xl shadow-blue-100 transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {SALES.length >= total ? "No more properties" : "Load More"}
           </button>
         </div>
 
         {/* CTA Section */}
         <CTASection />
-
       </main>
-
-     
     </div>
   );
 };
