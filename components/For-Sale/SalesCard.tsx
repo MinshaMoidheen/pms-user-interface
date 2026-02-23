@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { IProperty } from "@/types/properties";
 import { useRouter } from "next/navigation";
+import { getFlexibleField } from "@/utility/propertyUtils";
 
 interface SalesCardProps {
   sales: IProperty;
@@ -130,18 +131,21 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
             {/* Rating - Hidden on mobile, shown on desktop */}
             <div className="hidden md:flex items-center gap-1 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
               <div className="flex gap-0.5">
-                {[...Array(5)].map((_, i) => (
+                {[1, 2, 3, 4, 5].map((star) => (
                   <Star
-                    key={i}
+                    key={star}
                     size={14}
                     className={
-                      i < 5 ? "fill-[#FBBC05] text-[#FBBC05]" : "text-slate-200"
+                      sales.averageRating >= star
+                        ? "fill-[#FBBC05] text-[#FBBC05]"
+                        : "text-slate-200"
                     }
                   />
                 ))}
               </div>
+
               <span className="text-sm font-bold text-slate-900 ml-1">
-                (25)
+                {sales.reviewCount}
               </span>
             </div>
           </div>
@@ -150,11 +154,25 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
           <div className="flex flex-wrap items-center gap-4 text-slate-500 font-medium text-sm mb-4">
             <div className="flex items-center gap-2">
               <Bed size={18} className="text-slate-400" />
-              <span> {sales.flexibleFields?.bedrooms} Bedroom</span>
+              <span>
+                {" "}
+                {getFlexibleField(sales.flexibleFields, [
+                  "bedrooms",
+                  "bedroom",
+                ])}{" "}
+                Bedroom
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Bath size={18} className="text-slate-400" />
-              <span> {sales.flexibleFields?.bathrooms} Baths</span>
+              <span>
+                {" "}
+                {getFlexibleField(sales.flexibleFields, [
+                  "bathrooms",
+                  "bathroom",
+                ])}{" "}
+                Baths
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Maximize2 size={18} className="text-slate-400" />
@@ -220,7 +238,7 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
             </button>
             <button
               onClick={() =>
-                (window.location.href = `${sales.contact.whatsapp}`)
+                (window.location.href = `https://wa.me/${sales.contact.whatsappNumber}`)
               }
               className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#E8F5E9] hover:bg-green-100 text-[#22C55E] py-3 rounded-2xl text-sm font-bold transition-all transform active:scale-95"
             >

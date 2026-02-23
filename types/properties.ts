@@ -1,17 +1,16 @@
-export type PropertyType = 'SALE' | 'RENT';
-export type PropertyCategory = 
-  | 'HOUSE_VILLA' 
-  | 'APARTMENT' 
-  | 'STUDIO' 
-  | ' ' 
-  | 'COMMERCIAL_BUILDING' 
-  | 'COMMERCIAL_PROJECT'
-  | 'COWORKING_SPACE'
-  | 'SHOP_ROOM';
-
+export type PropertyType = "SALE" | "RENT";
+export type PropertyCategory =
+  | "HOUSE_VILLA"
+  | "APARTMENT"
+  | "STUDIO"
+  | " "
+  | "COMMERCIAL_BUILDING"
+  | "COMMERCIAL_PROJECT"
+  | "COWORKING_SPACE"
+  | "SHOP_ROOM";
 
 export interface IProperty {
-    _id: string;
+  _id: string;
   type: PropertyType; // SALE or RENT
   category: PropertyCategory;
   title: string;
@@ -36,13 +35,21 @@ export interface IProperty {
   flexibleFields: {
     [key: string]: any; // e.g., bedrooms, bathrooms, floors, parking, etc.
   };
+  // Flexible amenities list (e.g. "Free Wifi", "Air conditioning")
+  amenities: string[];
+  // Flexible validated info key-value pairs (e.g. Developer, Ownership, Usage)
+  validatedInfo: {
+    _id: string;
+    label: string;
+    value: string;
+  }[];
+  // Users who bookmarked this property
+  bookmarks: string[];
   images: string[]; // URLs to images
   contact: {
-    call: string;
     name: string;
     mobileNumber: string;
     email?: string;
-    whatsapp: string;
     whatsappNumber: string;
   };
   postedBy: string; // User who posted
@@ -55,23 +62,24 @@ export interface IProperty {
   };
   isFeatured: boolean;
   views: number;
+  averageRating: number; // Cached average rating (1-5), updated after every review
+  reviewCount: number; // Cached total review count, updated after every review
   createdAt: Date;
   updatedAt: Date;
 }
 
-
 export interface getPropertiesResponse {
-    success: boolean;
-    message: string;
-    data: {
-        properties: IProperty[];
-        pagination: {
-            page: number;
-            limit: number;
-            total: number;
-            totalPages: number;
-        };
+  success: boolean;
+  message: string;
+  data: {
+    properties: IProperty[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
     };
+  };
 }
 
 export interface getPropertyByIdResponse {
@@ -79,7 +87,7 @@ export interface getPropertyByIdResponse {
   message: string;
   data: {
     property: IProperty;
-  }
+  };
 }
 
 export interface getSimilarPropertiesResponse {
@@ -87,5 +95,5 @@ export interface getSimilarPropertiesResponse {
   message: string;
   data: {
     properties: IProperty[];
-  }
+  };
 }

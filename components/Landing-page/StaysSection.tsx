@@ -1,12 +1,21 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Star, ChevronRight, Heart, ChevronLeft } from "lucide-react";
+import {
+  Star,
+  ChevronRight,
+  Heart,
+  ChevronLeft,
+  Ruler,
+  Bath,
+  BedDouble,
+} from "lucide-react";
 import {
   GetPropertiesParams,
   useGetPropertiesQuery,
 } from "@/store/services/propertiesApiSlice";
 import { IProperty } from "@/types/properties";
+import { getFlexibleField } from "@/utility/propertyUtils";
 
 interface StaysSectionProps {
   city: string;
@@ -134,16 +143,65 @@ const StaysSection: React.FC<StaysSectionProps> = ({ city }) => {
                     </p>
                   </div>
 
-                  <p className="text-xs text-slate-400 mb-3">Feb 14-15</p>
+                  {/* <p className="text-xs text-slate-400 mb-3">Feb 14-15</p> */}
+
+                  <div className="flex flex-wrap gap-4 md:gap-5 text-sm font-medium text-slate-600 mb-3">
+                    {getFlexibleField(stay.flexibleFields, [
+                      "bedrooms",
+                      "bedroom",
+                    ]) && (
+                      <div className="flex items-center gap-2">
+                        <BedDouble className="w-4 h-4 text-slate-500" />
+                        <span>
+                          {getFlexibleField(stay.flexibleFields, [
+                            "bedrooms",
+                            "bedroom",
+                          ])}{" "}
+                          Bedroom
+                        </span>
+                      </div>
+                    )}
+                    {getFlexibleField(stay.flexibleFields, [
+                      "bathrooms",
+                      "bathroom",
+                    ]) && (
+                      <div className="flex items-center gap-2">
+                        <Bath className="w-4 h-4 text-slate-500" />
+                        <span>
+                          {getFlexibleField(stay.flexibleFields, [
+                            "bathrooms",
+                            "bathroom",
+                          ])}{" "}
+                          Baths
+                        </span>
+                      </div>
+                    )}
+                    {stay.area && (
+                      <div className="flex items-center gap-2">
+                        <Ruler className="w-4 h-4 text-slate-500 rotate-90" />
+                        <span>
+                          {stay.area.value} {stay.area.unit}
+                        </span>
+                      </div>
+                    )}
+                  </div>
 
                   <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
+                    {[1, 2, 3, 4, 5].map((star) => (
                       <Star
-                        key={i}
-                        className={`w-3.5 h-3.5 ${i < 4 ? "fill-yellow-400 text-yellow-400" : "text-slate-200"}`}
+                        key={star}
+                        size={14}
+                        className={
+                          stay.averageRating >= star
+                            ? "fill-[#FBBC05] text-[#FBBC05]"
+                            : "text-slate-200"
+                        }
                       />
                     ))}
-                    {/* <span className="text-xs text-slate-400 ml-1">({stay.rating})</span> */}
+
+                    <span className="text-sm font-bold text-slate-900 ml-1">
+                      {stay.reviewCount}
+                    </span>
                   </div>
                 </div>
               ))}

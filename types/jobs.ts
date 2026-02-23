@@ -34,7 +34,11 @@ export interface IJobPost {
   createdBy: string; // User who created
   updatedBy?: string; // User who last updated
   views: number;
+  applicants: string[]; // Array of user IDs who applied
   applicationCount: number;
+  bookmarks: string[]; // Array of user IDs who bookmarked
+  averageRating: number; // Cached average rating (1-5)
+  reviewCount: number; // Cached total review count
   isDeleted: {
     status: boolean;
     deletedBy?: string;
@@ -67,10 +71,13 @@ export interface getJobPostByIdResponse {
   };
 }
 
-
 // Applications
 
-export type ApplicationStatus = 'PENDING' | 'SHORTLISTED' | 'REJECTED' | 'ACCEPTED';
+export type ApplicationStatus =
+  | "PENDING"
+  | "SHORTLISTED"
+  | "REJECTED"
+  | "ACCEPTED";
 
 export interface IJobApplication {
   _id: string;
@@ -94,10 +101,10 @@ export interface IJobApplication {
 }
 
 export interface applyJobRequest {
- fullname: string;
- mobileNumber: string;
- email?: string;
- cv?: File;
+  fullname: string;
+  mobileNumber: string;
+  email?: string;
+  cv?: File;
 }
 
 export interface applyJobResponse {

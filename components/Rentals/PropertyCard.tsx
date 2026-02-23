@@ -3,7 +3,6 @@ import { Heart, Star, MapPin } from "lucide-react";
 import { IProperty } from "@/types/properties";
 import { useRouter } from "next/navigation";
 
-
 interface PropertyCardProps {
   property: IProperty;
 }
@@ -16,12 +15,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     e.stopPropagation();
     setIsLiked(!isLiked);
   };
-    
 
   return (
     <div
-     onClick={() => router.push(`/rentals/${property._id}`)}
-     className="group cursor-pointer">
+      onClick={() => router.push(`/rentals/${property._id}`)}
+      className="group cursor-pointer"
+    >
       <div className="relative aspect-4/3 rounded-2xl overflow-hidden mb-3">
         <img
           src={property.images?.[0] || "/placeholder.jpg"}
@@ -60,31 +59,34 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
         <div className="flex items-baseline gap-1 pt-1">
           <span className="text-xl font-bold text-gray-900">
-             ₹{property.price}
+            ₹{property.price}
           </span>
-          <span className="text-sm text-gray-500 font-medium">/ {property.priceUnit}</span>
+          <span className="text-sm text-gray-500 font-medium">
+            / {property.priceUnit}
+          </span>
         </div>
 
-        {/* <p className="text-sm text-gray-500 font-medium">{property.dates}</p>
+        {/* <p className="text-sm text-gray-500 font-medium">{property.dates}</p>*/}
 
         <div className="flex items-center gap-1 pt-1">
           <div className="flex gap-0.5">
-            {[...Array(5)].map((_, i) => (
+            {[1, 2, 3, 4, 5].map((star) => (
               <Star
-                key={i}
+                key={star}
                 size={14}
                 className={
-                  i < Math.floor(property.rating)
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-gray-300"
+                  property.averageRating >= star
+                    ? "fill-[#FBBC05] text-[#FBBC05]"
+                    : "text-slate-200"
                 }
               />
             ))}
           </div>
-          <span className="text-sm font-semibold text-gray-900 ml-1">
-            ({property.reviews})
+
+          <span className="text-sm font-bold text-slate-900 ml-1">
+            {property.reviewCount}
           </span>
-        </div> */}
+        </div>
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ import {
   useGetPropertiesQuery,
 } from "@/store/services/propertiesApiSlice";
 import { IProperty } from "@/types/properties";
+import { getFlexibleField } from "@/utility/propertyUtils";
 
 const FeaturedProperties: React.FC = () => {
   const router = useRouter();
@@ -154,16 +155,34 @@ const FeaturedProperties: React.FC = () => {
                     </p>
 
                     <div className="flex flex-wrap gap-4 md:gap-5 text-sm font-medium text-slate-600 mb-3">
-                      {prop.flexibleFields?.bedrooms && (
+                      {getFlexibleField(prop.flexibleFields, [
+                        "bedrooms",
+                        "bedroom",
+                      ]) && (
                         <div className="flex items-center gap-2">
                           <BedDouble className="w-4 h-4 text-slate-500" />
-                          <span>{prop.flexibleFields.bedrooms} Bedroom</span>
+                          <span>
+                            {getFlexibleField(prop.flexibleFields, [
+                              "bedrooms",
+                              "bedroom",
+                            ])}{" "}
+                            Bedroom
+                          </span>
                         </div>
                       )}
-                      {prop.flexibleFields?.bathrooms && (
+                      {getFlexibleField(prop.flexibleFields, [
+                        "bathrooms",
+                        "bathroom",
+                      ]) && (
                         <div className="flex items-center gap-2">
                           <Bath className="w-4 h-4 text-slate-500" />
-                          <span>{prop.flexibleFields.bathrooms} Baths</span>
+                          <span>
+                            {getFlexibleField(prop.flexibleFields, [
+                              "bathrooms",
+                              "bathroom",
+                            ])}{" "}
+                            Baths
+                          </span>
                         </div>
                       )}
                       {prop.area && (
@@ -198,7 +217,7 @@ const FeaturedProperties: React.FC = () => {
 
                       {/* Call */}
                       <a
-                        href={prop.contact.call} // already has tel:
+                        href={`tel:${prop.contact.mobileNumber}`} // already has tel:
                         onClick={(e) => e.stopPropagation()}
                         className="flex-1 flex items-center justify-center gap-2 border border-red-200 text-red-600 bg-red-50 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-100 transition-colors"
                       >
@@ -207,7 +226,7 @@ const FeaturedProperties: React.FC = () => {
 
                       {/* WhatsApp */}
                       <a
-                        href={prop.contact.whatsapp}
+                        href={`https://wa.me/${prop.contact.whatsappNumber}`}
                         onClick={(e) => e.stopPropagation()}
                         target="_blank"
                         rel="noopener noreferrer"

@@ -27,12 +27,16 @@ import {
   Ruler,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useGetPropertyByIdQuery, useGetSimilarPropertiesQuery } from "@/store/services/propertiesApiSlice";
+import {
+  useGetPropertyByIdQuery,
+  useGetSimilarPropertiesQuery,
+} from "@/store/services/propertiesApiSlice";
 import Header from "../Common/Header";
 import Link from "next/link";
 import Footer from "../Common/Footer";
 import FeaturedProperties from "../Landing-page/FeaturedProperties";
 import { IProperty } from "@/types/properties";
+import { getFlexibleField } from "@/utility/propertyUtils";
 
 interface PropertyDetailProps {
   id: string;
@@ -41,9 +45,15 @@ interface PropertyDetailProps {
 const PropertyDetail: React.FC<PropertyDetailProps> = () => {
   const router = useRouter();
   const { id } = useParams();
-  const { data: property, isLoading, isError } = useGetPropertyByIdQuery(id as string);
+  const {
+    data: property,
+    isLoading,
+    isError,
+  } = useGetPropertyByIdQuery(id as string);
 
-   const { data: similarProperties } = useGetSimilarPropertiesQuery(id as string);
+  const { data: similarProperties } = useGetSimilarPropertiesQuery(
+    id as string,
+  );
 
   const similarPropertiesList = similarProperties?.data?.properties;
 
@@ -75,8 +85,6 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
       </div>
     );
   }
-
- 
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
@@ -145,7 +153,8 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
           <div className="flex-1 space-y-12">
             <div className="mb-8">
               <h2 className="text-xl font-bold mb-1">
-                {displayedProperty.title} in {displayedProperty.location.address}
+                {displayedProperty.title} in{" "}
+                {displayedProperty.location.address}
               </h2>
               <div className="flex items-baseline gap-2 mb-4">
                 <span className="text-3xl font-extrabold text-gray-900">
@@ -160,13 +169,21 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 <div className="flex items-center gap-2">
                   <BedDouble size={20} className="text-gray-400" />
                   <span className="text-sm font-semibold">
-                    {displayedProperty.flexibleFields?.bedrooms} Bedroom
+                    {getFlexibleField(displayedProperty.flexibleFields, [
+                      "bedrooms",
+                      "bedroom",
+                    ])}{" "}
+                    Bedroom
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Bath size={20} className="text-gray-400" />
                   <span className="text-sm font-semibold">
-                    {displayedProperty.flexibleFields?.bathrooms} Bath
+                    {getFlexibleField(displayedProperty.flexibleFields, [
+                      "bathrooms",
+                      "bathroom",
+                    ])}{" "}
+                    Bath
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -253,11 +270,11 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
               </p>
               <div className="space-y-2">
                 <h4 className="font-bold text-[#1E293B]">The space</h4> */}
-                <p className="text-[#64748B] leading-relaxed font-medium">
-                  {showMore
-                    ? displayedProperty.description
-                    : `${displayedProperty.description.slice(0, 200)}...`}
-                </p>
+              <p className="text-[#64748B] leading-relaxed font-medium">
+                {showMore
+                  ? displayedProperty.description
+                  : `${displayedProperty.description.slice(0, 200)}...`}
+              </p>
               {/* </div> */}
               <button
                 onClick={() => setShowMore(!showMore)}
@@ -276,17 +293,34 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 {[
                   { label: "Type", value: displayedProperty.type },
                   { label: "Purpose", value: displayedProperty.type },
-                  { label: "Property Age", value: "1 year" },
+                  {
+                    label: "Property Age",
+                    value: displayedProperty.flexibleFields?.propertyAge,
+                  },
                   {
                     label: "Furnishing",
                     value:
                       displayedProperty.flexibleFields?.furnishing ||
                       "Fully Furnished",
                   },
-                  { label: "Average Mortage", value: "₹ 10,00,000" },
-                  { label: "Plot", value: `${displayedProperty.area.value} ${displayedProperty.area.unit}` },
-                  { label: "Completion Status", value: "Ready" },
-                  { label: "Updated", value: new Date(displayedProperty.updatedAt).toLocaleDateString() },
+                  {
+                    label: "Average Mortage",
+                    value: displayedProperty.flexibleFields?.averageMortage,
+                  },
+                  {
+                    label: "Plot",
+                    value: `${displayedProperty.area.value} ${displayedProperty.area.unit}`,
+                  },
+                  {
+                    label: "Completion Status",
+                    value: displayedProperty.flexibleFields?.completionStatus,
+                  },
+                  {
+                    label: "Updated",
+                    value: new Date(
+                      displayedProperty.updatedAt,
+                    ).toLocaleDateString(),
+                  },
                 ].map((detail, idx) => (
                   <div
                     key={idx}
@@ -307,7 +341,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
             </div>
 
             {/* Amenities */}
-            <div className="space-y-6 md:space-y-8">
+            {/* <div className="space-y-6 md:space-y-8">
               <h3 className="text-xl md:text-2xl font-bold text-[#1E293B]">
                 What this place offers
               </h3>
@@ -358,6 +392,29 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                   </div>
                 ))}
               </div>
+            </div> */}
+
+            <div className="space-y-6 md:space-y-8">
+              <h3 className="text-xl md:text-2xl font-bold text-[#1E293B]">
+                What this place offers
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3">
+                {displayedProperty?.amenities?.length > 0 ? (
+                  displayedProperty.amenities.map((amenity, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
+                      <span className="text-[#64748B] font-medium text-sm capitalize">
+                        {amenity}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-sm">
+                    No amenities available
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Validated Information */}
@@ -370,39 +427,30 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 Validated Information
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4 md:gap-y-6">
-                <div className="flex justify-between sm:justify-start gap-4 sm:gap-8 border-b sm:border-b-0 pb-2 sm:pb-0 border-gray-50">
-                  <span className="text-[#64748B] font-medium w-24 md:w-32 text-sm md:text-base">
-                    Developer
-                  </span>
-                  <span className="hidden sm:inline text-[#64748B] font-medium">
-                    :
-                  </span>
-                  <span className="text-[#1E293B] font-bold text-sm md:text-base text-right sm:text-left">
-                    Sugee Developers Pvt Ltd
-                  </span>
-                </div>
-                <div className="flex justify-between sm:justify-start gap-4 sm:gap-8 border-b sm:border-b-0 pb-2 sm:pb-0 border-gray-50">
-                  <span className="text-[#64748B] font-medium w-24 md:w-32 text-sm md:text-base">
-                    Ownership
-                  </span>
-                  <span className="hidden sm:inline text-[#64748B] font-medium">
-                    :
-                  </span>
-                  <span className="text-[#1E293B] font-bold text-sm md:text-base text-right sm:text-left">
-                    Freehold
-                  </span>
-                </div>
-                <div className="flex justify-between sm:justify-start gap-4 sm:gap-8 border-b sm:border-b-0 pb-2 sm:pb-0 border-gray-50">
-                  <span className="text-[#64748B] font-medium w-24 md:w-32 text-sm md:text-base">
-                    Usage
-                  </span>
-                  <span className="hidden sm:inline text-[#64748B] font-medium">
-                    :
-                  </span>
-                  <span className="text-[#1E293B] font-bold text-sm md:text-base text-right sm:text-left">
-                    Residential
-                  </span>
-                </div>
+                {displayedProperty?.validatedInfo?.length > 0 ? (
+                  displayedProperty.validatedInfo.map((item) => (
+                    <div
+                      key={item._id}
+                      className="flex justify-between sm:justify-start gap-4 sm:gap-8 border-b sm:border-b-0 pb-2 sm:pb-0 border-gray-50"
+                    >
+                      <span className="text-[#64748B] font-medium w-24 md:w-32 text-sm md:text-base">
+                        {item.label}
+                      </span>
+
+                      <span className="hidden sm:inline text-[#64748B] font-medium">
+                        :
+                      </span>
+
+                      <span className="text-[#1E293B] font-bold text-sm md:text-base text-right sm:text-left capitalize">
+                        {item.value}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-sm">
+                    No validated information available
+                  </p>
+                )}
                 <div className="flex justify-between sm:justify-start gap-4 sm:gap-8 border-b sm:border-b-0 pb-2 sm:pb-0 border-gray-50">
                   <span className="text-[#64748B] font-medium w-24 md:w-32 text-sm md:text-base">
                     Property Area
@@ -411,7 +459,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                     :
                   </span>
                   <span className="text-[#1E293B] font-bold text-sm md:text-base text-right sm:text-left">
-                    450 sqft
+                    {displayedProperty.area.value} {displayedProperty.area.unit}
                   </span>
                 </div>
               </div>
@@ -422,19 +470,30 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
               <h3 className="text-lg font-bold mb-2">
                 Where the property is located
               </h3>
+
               <p className="text-sm text-gray-500 font-semibold mb-6">
                 {displayedProperty.location.address},{" "}
                 {displayedProperty.location.city}
               </p>
+
               <div className="w-full aspect-video rounded-3xl overflow-hidden border border-gray-100 shadow-sm relative group">
-                <img
-                  src="/images/GoogleMapsWidget.png"
-                  className="w-full h-full object-cover"
-                  alt="Location map"
-                />
+                {displayedProperty?.location?.coordinates?.latitude &&
+                displayedProperty?.location?.coordinates?.longitude ? (
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    allowFullScreen
+                    src={`https://www.google.com/maps?q=${displayedProperty.location.coordinates.latitude},${displayedProperty.location.coordinates.longitude}&hl=en&z=15&output=embed`}
+                  />
+                ) : (
+                  <p className="flex items-center justify-center h-full text-gray-400">
+                    Location not available
+                  </p>
+                )}
               </div>
             </div>
-
             {/* Meet Agent Section */}
             <div className="mb-20">
               <h3 className="text-2xl font-bold mb-8 text-gray-900">
@@ -605,7 +664,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 </button>
                 <button
                   onClick={() =>
-                    (window.location.href = `tel:${displayedProperty.contact.call}`)
+                    (window.location.href = `tel:${displayedProperty.contact.mobileNumber}`)
                   }
                   className="w-full py-4 bg-[#FFE5E5] text-[#FF5A3D] rounded-xl font-bold text-sm hover:bg-[#FFD9D9] transition-all flex items-center justify-center gap-3"
                 >
@@ -614,7 +673,10 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 </button>
                 <button
                   onClick={() =>
-                    window.open(displayedProperty.contact.whatsapp, "_blank")
+                    window.open(
+                      `https://wa.me/${displayedProperty.contact.whatsappNumber}`,
+                      "_blank",
+                    )
                   }
                   className="w-full py-4 bg-[#E6F8E6] text-[#22C55E] rounded-xl font-bold text-sm hover:bg-[#D4F5D4] transition-all flex items-center justify-center gap-3"
                 >
@@ -670,32 +732,38 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                   <div className="flex items-center gap-4 py-2 border-y border-gray-50">
                     <div className="flex items-center gap-1.5">
                       <BedDouble size={14} className="text-gray-400" />
-                      <span className="text-[10px] font-bold">{sale.flexibleFields?.bedrooms} Bedrooms</span>
+                      <span className="text-[10px] font-bold">
+                        {getFlexibleField(sale.flexibleFields, [
+                          "bedrooms",
+                          "bedroom",
+                        ])}{" "}
+                        Bedrooms
+                      </span>
                     </div>
                     <div className="flex items-center gap-1.5 border-l pl-4 border-gray-100">
                       <Ruler size={14} className="text-gray-400 rotate-90" />
-                      <span className="text-[10px] font-bold">{sale.area?.value} {sale?.area?.unit}</span>
+                      <span className="text-[10px] font-bold">
+                        {sale.area?.value} {sale?.area?.unit}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <div className="flex items-center gap-1">
-                      <Star
-                        size={14}
-                        className="fill-orange-400 text-orange-400"
-                      />
-                      <Star
-                        size={14}
-                        className="fill-orange-400 text-orange-400"
-                      />
-                      <Star
-                        size={14}
-                        className="fill-orange-400 text-orange-400"
-                      />
-                      <Star
-                        size={14}
-                        className="fill-orange-400 text-orange-400"
-                      />
-                      <span className="text-[10px] font-black ml-1">(42)</span>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={14}
+                          className={`${
+                            sale.averageRating >= star
+                              ? "fill-orange-400 text-orange-400"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+
+                      <span className="text-[10px] font-black ml-1">
+                        ({sale.reviewCount})
+                      </span>
                     </div>
                   </div>
                 </div>
