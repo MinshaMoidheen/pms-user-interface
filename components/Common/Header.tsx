@@ -61,7 +61,7 @@ const Header: React.FC = () => {
               key={link.name}
               href={link.href}
               className={`px-4 py-2 rounded-full transition-colors whitespace-nowrap ${pathname === link.href
-                ? `${link.href === "/jobs" ? "bg-[#2D5BFF]" : "bg-[#FF5A3C]"} text-white`
+                ? `${link.href === "/jobs" ? "bg-[#FF5A3C]" : "bg-[#FF5A3C]"} text-white`
                 : "hover:text-slate-900"
                 }`}
             >
@@ -76,7 +76,7 @@ const Header: React.FC = () => {
           <div className="hidden md:flex items-center gap-4">
             {isLoggedIn ? (
               <>
-                <Link
+                {/* <Link
                   href="/for-sale"
                   className="bg-[#2D5BFF] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap"
                 >
@@ -87,7 +87,13 @@ const Header: React.FC = () => {
                   className="bg-[#FF5A3C] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-orange-600 transition-colors whitespace-nowrap"
                 >
                   List Jobs
-                </Link>
+                </Link> */}
+                <button
+                  onClick={() => dispatch(openPlaceAnAdModal())}
+                  className="bg-[#FF5A3C] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap"
+                >
+                  Place an Ad
+                </button>
                 <button
                   onClick={() => dispatch(openProfileModal())}
                   className="p-2.5 rounded-full bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
@@ -103,6 +109,12 @@ const Header: React.FC = () => {
                 >
                   Login
                 </Link>
+                <button
+                  onClick={() => dispatch(openPlaceAnAdModal())}
+                  className="bg-[#FF5A3C] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-orange-600 transition-colors whitespace-nowrap"
+                >
+                  Place an Ad
+                </button>
                 <Link
                   href="/login"
                   className="p-2.5 rounded-full bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
@@ -169,6 +181,15 @@ const Header: React.FC = () => {
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
+                    dispatch(openPlaceAnAdModal());
+                  }}
+                  className="w-full bg-[#2D5BFF] text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors text-center"
+                >
+                  Place an Ad
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
                     dispatch(openProfileModal());
                   }}
                   className="w-full flex items-center justify-center gap-2 bg-slate-50 text-slate-700 px-6 py-3 rounded-full font-semibold hover:bg-slate-100 transition-colors"
@@ -186,6 +207,15 @@ const Header: React.FC = () => {
                 >
                   Login
                 </Link>
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    dispatch(openPlaceAnAdModal());
+                  }}
+                  className="w-full bg-[#FF5A3C] text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors text-center"
+                >
+                  Place an Ad
+                </button>
                 <Link
                   href="/login"
                   onClick={() => setIsMenuOpen(false)}

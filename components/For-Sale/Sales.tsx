@@ -1,107 +1,105 @@
 "use client";
 
 import React, { useState } from 'react';
-import { SlidersHorizontal, Calendar, ChevronDown, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SlidersHorizontal, Calendar, ChevronDown, Loader2, ChevronLeft, ChevronRight, Share2, Bookmark, Search, MapPin, X } from 'lucide-react';
 
 import Header from '../Common/Header';
 import SalesCard from './SalesCard';
 import MapViewSales from './MapViewSales';
 import Footer from '../Common/Footer';
+import CTASection from '../Landing-page/CTASection';
 import DateRangePickerModal from '../Rentals/DateRangePickerModal';
 import FilterModal from './FilterModal';
 import { GetPropertiesParams, useGetPropertiesQuery } from '@/store/services/propertiesApiSlice';
 
-
+import { useRouter } from 'next/navigation';
+import PriceRangeSlider from './PriceRangeSlider';
 
 const Sales = () => {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
- const [dateRange, setDateRange] = useState<{
-     startDate: Date | null;
-     endDate: Date | null;
-   }>({
-     startDate: new Date(2026, 0, 1), // May 23
-     endDate: new Date(2026, 11, 31), // June 15
-   });
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: new Date(2026, 0, 1),
+    endDate: new Date(2026, 11, 31),
+  });
 
   const [appliedFilters, setAppliedFilters] = useState<any>(null);
- 
-   const [page, setPage] = useState(0);
-   const [limit, setLimit] = useState(6);
-   const [search, setSearch] = useState("");
-   const [type, setType] = useState<GetPropertiesParams["type"]>("SALE");
-   const [category, setCategory] =
-     useState<GetPropertiesParams["category"]>(undefined);
-   const [filterCity, setFilterCity] =
-     useState<GetPropertiesParams["city"]>(undefined);
- 
-   const params: GetPropertiesParams = {
-     page: page + 1,
-     limit,
-     ...(search && { search }),
-     ...(type && { type }),
-     ...(category && { category }),
-     ...(filterCity && { city: filterCity }),
-     ...(dateRange.startDate && {
-       startDate: dateRange.startDate.toISOString(),
-     }),
-     ...(dateRange.endDate && { endDate: dateRange.endDate.toISOString() }),
-     ...(appliedFilters?.rooms !== "Any" && { rooms: appliedFilters?.rooms }),
-     ...(appliedFilters?.beds !== "Any" && { beds: appliedFilters?.beds }),
-     ...(appliedFilters?.bathrooms !== "Any" && {
-       bathrooms: appliedFilters?.bathrooms,
-     }),
-     ...(appliedFilters?.areaRange?.min && {
-       minArea: appliedFilters.areaRange.min,
-     }),
-     ...(appliedFilters?.areaRange?.max && {
-       maxArea: appliedFilters.areaRange.max,
-     }),
-     ...(appliedFilters?.amenities?.length > 0 && {
-       amenities: appliedFilters.amenities,
-     }),
-   };
- 
-   const { data, isLoading, isError, error } = useGetPropertiesQuery(params);
- 
-   const SALES = data?.data?.properties ?? [];
-   const pagination = data?.data?.pagination;
+  const [sortBy, setSortBy] = useState<'highest' | 'lowest'>('highest');
+  const [priceRange, setPriceRange] = useState([2500000, 30000000]);
+
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(6);
+  const [search, setSearch] = useState("");
+  const [type, setType] = useState<GetPropertiesParams["type"]>("SALE");
+  const [category, setCategory] = useState<GetPropertiesParams["category"]>(undefined);
+  const [filterCity, setFilterCity] = useState<GetPropertiesParams["city"]>(undefined);
+
+  const params: GetPropertiesParams = {
+    page: page + 1,
+    limit,
+    ...(search && { search }),
+    ...(type && { type }),
+    ...(category && { category }),
+    ...(filterCity && { city: filterCity }),
+    ...(dateRange.startDate && {
+      startDate: dateRange.startDate.toISOString(),
+    }),
+    ...(dateRange.endDate && { endDate: dateRange.endDate.toISOString() }),
+    ...(appliedFilters?.rooms !== "Any" && { rooms: appliedFilters?.rooms }),
+    ...(appliedFilters?.beds !== "Any" && { beds: appliedFilters?.beds }),
+    ...(appliedFilters?.bathrooms !== "Any" && {
+      bathrooms: appliedFilters?.bathrooms,
+    }),
+    ...(appliedFilters?.areaRange?.min && {
+      minArea: appliedFilters.areaRange.min,
+    }),
+    ...(appliedFilters?.areaRange?.max && {
+      maxArea: appliedFilters.areaRange.max,
+    }),
+    ...(appliedFilters?.amenities?.length > 0 && {
+      amenities: appliedFilters.amenities,
+    }),
+  };
+
+  const { data, isLoading, isError, error } = useGetPropertiesQuery(params);
+
+  const SALES = data?.data?.properties ?? [];
+  const pagination = data?.data?.pagination;
    const total = pagination?.total ?? 0;
-   const totalPages = pagination?.totalPages ?? 0;
- 
-   // Handle filter apply
-   const handleApplyFilters = (filters: any) => {
-     setAppliedFilters(filters);
-     setIsFilterModalOpen(false);
-     setPage(0); // Reset to first page when filters change
-   };
- 
-   const handleApplyDates = (range: {
-     startDate: Date | null;
-     endDate: Date | null;
-   }) => {
-     setDateRange(range);
-     setIsDatePickerOpen(false);
-     setPage(0); // Reset to first page when dates change
-   };
- 
-   const formatDateRange = () => {
-     if (!dateRange.startDate) return "Select Dates";
-     const startStr = dateRange.startDate.toLocaleDateString("en-US", {
-       month: "short",
-       day: "numeric",
-     });
-     if (!dateRange.endDate) return `${startStr} - ...`;
-     const endStr = dateRange.endDate.toLocaleDateString("en-US", {
-       month: "short",
-       day: "numeric",
-     });
-     return `${startStr} - ${endStr}`;
-   };
+  
+  const totalPages = pagination?.totalPages ?? 0;
+
+  const handleApplyFilters = (filters: any) => {
+    setAppliedFilters(filters);
+    setIsFilterModalOpen(false);
+    setPage(0);
+  };
+
+  const handleApplyDates = (range: {
+    startDate: Date | null;
+    endDate: Date | null;
+  }) => {
+    setDateRange(range);
+    setIsDatePickerOpen(false);
+    setPage(0);
+  };
+
+  const filterChips = [
+    { label: "Bangalore, Karnataka", active: true },
+    { label: "May 23 - June 15", active: true },
+    { label: "2 Beds", active: true },
+    { label: "Apartment", active: true },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <Header />
+
       <FilterModal
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
@@ -115,173 +113,151 @@ const Sales = () => {
         initialRange={dateRange}
       />
 
-      <main className="grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12 mt-14">
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
-          <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-              {total} Places in <br className="md:hidden" />
+      <main className="grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+
+        {/* Top Header Actions */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.back()}
+              className="p-3 bg-slate-50 border border-slate-100 rounded-full text-slate-900 hover:bg-slate-100 transition-colors"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div className="space-y-1">
+              <h1 className="text-xl md:text-2xl font-bold text-slate-900">
+               {total} Places in <br className="md:hidden" />
               {filterCity || "All"}
-            </h1>
-            <p className="text-gray-500 font-medium">
-              Easily book site visits and search properties quickly.
-            </p>
+              </h1>
+              <p className="text-slate-400 text-sm font-medium">
+                Easily book site visits and search properties quickly.
+              </p>
+            </div>
           </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <button
-              onClick={() => setIsFilterModalOpen(true)}
-              className="flex items-center gap-2.5 px-6 py-3 bg-white border border-gray-200 rounded-full font-bold text-gray-900 hover:border-gray-400 transition-all shadow-sm hover:shadow-md"
-            >
-              <SlidersHorizontal size={18} />
-              <span>Filter</span>
+          <div className="flex items-center gap-3">
+            <button className="p-3 bg-slate-50 border border-slate-100 rounded-full text-slate-600 hover:bg-slate-100 transition-colors">
+              <Share2 size={20} />
             </button>
-            <button
-              onClick={() => setIsDatePickerOpen(true)}
-              className="flex items-center gap-3 px-6 py-3 bg-[#F8FAFC] rounded-full cursor-pointer hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200"
-            >
-              <Calendar size={18} className="text-gray-500" />
-              <div className="flex flex-col -space-y-1">
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Date</span>
-                <span className="text-sm font-bold text-gray-900">{formatDateRange()}</span>
-              </div>
-              <ChevronDown size={18} className="text-gray-500 ml-2" />
+            <button className="p-3 bg-slate-50 border border-slate-100 rounded-full text-slate-600 hover:bg-slate-100 transition-colors">
+              <Bookmark size={20} />
             </button>
           </div>
         </div>
 
-        {/* View Toggle - Mobile Only */}
-        <div className="flex lg:hidden gap-2 mb-6">
-          <button
-            onClick={() => setViewMode('list')}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${viewMode === 'list'
-              ? 'bg-gray-900 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            List View
-          </button>
-          <button
-            onClick={() => setViewMode('map')}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${viewMode === 'map'
-              ? 'bg-gray-900 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            Map View
-          </button>
-        </div>
+        {/* Search & Filter Bar */}
+        <div className="bg-white rounded-[2.5rem] border border-slate-100 p-3 mb-8 shadow-sm">
+          <div className="flex flex-col lg:flex-row items-center gap-4">
 
-        {/* Content Section: Grid + Map */}
-        <div className="flex flex-col lg:flex-row gap-8 min-h-[600px]">
-          {/* Properties List - Hidden on mobile when map view is active */}
-          <div className={`w-full lg:w-1/2 ${viewMode === 'map' ? 'hidden lg:block' : 'block'}`}>
-              {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-[400px] text-gray-500 gap-3">
-                <Loader2 className="animate-spin" size={40} />
-                <p className="font-medium text-lg">
-                  Finding the best places for you...
-                </p>
-              </div>
-            ) : isError ? (
-              <div className="flex flex-col items-center justify-center h-[400px] text-red-500 text-center gap-4">
-                <p className="font-bold text-xl text-gray-900">
-                  Oops! Something went wrong.
-                </p>
-                <p className="text-gray-500 max-w-xs capitalize">
-                  {(error as any)?.data?.message ||
-                    "Failed to load properties. Please try again later."}
-                </p>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-6 py-2 bg-[#FF5A3C] text-white rounded-full font-bold shadow-lg shadow-orange-200 hover:bg-[#ff4a2d] transition-colors"
-                >
-                  Retry
-                </button>
-              </div>
-            ) : SALES.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 text-center">
-                <p className="font-bold text-xl text-gray-900 mb-2">
-                  No properties found
-                </p>
-                <p className="mb-4">
-                  Try adjusting your filters or search terms
-                </p>
-                <button
-                  onClick={() => setIsFilterModalOpen(true)}
-                  className="px-6 py-2 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors"
-                >
-                  Adjust Filters
-                </button>
-              </div>
-            ) : (
-              <>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-10">
-              {SALES.map(sales => (
-                <SalesCard key={sales._id} sales={sales} />
-              ))}
+            {/* Price Slider Section */}
+            <div className="w-full lg:w-[35%] px-4">
+              <PriceRangeSlider
+              min={0}
+                max={50000000}
+                step={50000}
+                value={priceRange as [number, number]}
+                onChange={(val) => setPriceRange(val)}
+                onAfterChange={() => setPage(0)}
+              />
             </div>
 
-            {/* Load More Button */}
-            <div className="mt-10 text-center">
-              <button className="px-8 py-3 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors shadow-md hover:shadow-lg">
-                Load More Properties
+            {/* Vertical Divider */}
+            <div className="hidden lg:block w-px h-10 bg-slate-100"></div>
+
+            {/* Location Search Input */}
+            <div className="flex-1 w-full relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#FF5A3C]">
+                <MapPin size={20} className="fill-[#FF5A3C]/10" />
+              </div>
+              <input
+                type="text"
+                placeholder="Bangalore, Karnataka"
+                className="w-full pl-12 pr-4 py-3 bg-white outline-none text-slate-900 font-semibold placeholder:text-slate-400"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 w-full lg:w-auto">
+              <button
+                onClick={() => setIsFilterModalOpen(true)}
+                className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-100 rounded-full font-bold text-slate-900 hover:bg-slate-50 transition-colors"
+              >
+                <SlidersHorizontal size={18} />
+                Filter
+              </button>
+              <button className="flex-1 lg:flex-none px-10 py-3 bg-[#FF5A3C] hover:bg-orange-600 text-white rounded-full font-bold transition-all shadow-lg shadow-orange-100">
+                Search
               </button>
             </div>
-
-            {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-16 border-t border-gray-100 pt-10">
-                    <button
-                      onClick={() => setPage((p) => Math.max(0, p - 1))}
-                      disabled={page === 0}
-                      className="p-2.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-
-                    <div className="flex items-center gap-1">
-                      {[...Array(totalPages)].map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setPage(i)}
-                          className={`w-10 h-10 rounded-full font-bold transition-all ${
-                            page === i
-                              ? "bg-gray-900 text-white shadow-md"
-                              : "text-gray-600 hover:bg-gray-100"
-                          }`}
-                        >
-                          {i + 1}
-                        </button>
-                      ))}
-                    </div>
-
-                    <button
-                      onClick={() =>
-                        setPage((p) => Math.min(totalPages - 1, p + 1))
-                      }
-                      disabled={page === totalPages - 1}
-                      className="p-2.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-
-          {/* Map View - Hidden on mobile when list view is active */}
-          <div className={`w-full lg:w-1/2 h-[500px] lg:h-auto lg:sticky lg:top-24 ${viewMode === 'list' ? 'hidden lg:block' : 'block'
-            }`}>
-            <MapViewSales sales={SALES} />
           </div>
         </div>
 
-        <div className="h-24 md:hidden" />
+        {/* Filter Chips & Sorting */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
+          <div className="flex flex-wrap items-center gap-3">
+            {filterChips.map((chip, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white border border-red-50 text-[#FF5A3C] rounded-full text-xs font-bold transition-colors cursor-pointer hover:bg-red-50"
+              >
+                {chip.label}
+                <X size={14} className="text-[#FF5A3C]" />
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-slate-50 p-1.5 rounded-full flex gap-1">
+            <button
+              onClick={() => setSortBy('highest')}
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${sortBy === 'highest' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
+            >
+              Highest Price
+            </button>
+            <button
+              onClick={() => setSortBy('lowest')}
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${sortBy === 'lowest' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
+            >
+              Lowest Price
+            </button>
+          </div>
+        </div>
+
+        {/* Properties List */}
+        <div className="space-y-8 mb-16">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <Loader2 className="animate-spin text-[#2D5BFF]" size={40} />
+              <p className="font-bold text-slate-400">Finding the best properties...</p>
+            </div>
+          ) : isError ? (
+            <div className="text-center py-20 text-red-500">
+              <p className="font-bold text-xl mb-4">Oops! Something went wrong.</p>
+              <button onClick={() => window.location.reload()} className="text-[#FF5A3C] font-bold underline">Retry</button>
+            </div>
+          ) : SALES.length === 0 ? (
+            <div className="text-center py-20 text-slate-400">
+              <p className="font-bold text-xl mb-2">No properties found</p>
+              <p>Try adjusting your filters or search terms</p>
+            </div>
+          ) : (
+            SALES.map(property => (
+              <SalesCard key={property._id} sales={property} />
+            ))
+          )}
+        </div>
+
+        {/* Load More */}
+        <div className="flex justify-center mb-24">
+          <button className="bg-[#2D5BFF] hover:bg-blue-700 text-white px-20 py-4 rounded-full font-bold shadow-xl shadow-blue-100 transition-all transform active:scale-95">
+            Load More
+          </button>
+        </div>
+
+        {/* CTA Section */}
+        <CTASection />
+
       </main>
 
+     
     </div>
   );
 };
