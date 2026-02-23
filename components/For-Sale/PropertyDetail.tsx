@@ -80,7 +80,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
-      <Header />
+      {/* <Header /> */}
 
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-6 mt-20">
         {/* Header Section */}
@@ -145,7 +145,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
           <div className="flex-1 space-y-12">
             <div className="mb-8">
               <h2 className="text-xl font-bold mb-1">
-                Studio Room in {displayedProperty.location.address}
+                {displayedProperty.title} in {displayedProperty.location.address}
               </h2>
               <div className="flex items-baseline gap-2 mb-4">
                 <span className="text-3xl font-extrabold text-gray-900">
@@ -245,20 +245,20 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
               <h3 className="text-2xl font-bold text-[#1E293B]">
                 About This Space
               </h3>
-              <p className="text-[#64748B] leading-relaxed font-medium">
+              {/* <p className="text-[#64748B] leading-relaxed font-medium">
                 Located just 1 km from Technopark Phase 1, Milestone Suites
                 offers 4 uniquely designed rooms featuring elegant French-style
                 wall panels and soft, neutral-toned interiors creating a
                 peaceful setting for work or relaxation.
               </p>
               <div className="space-y-2">
-                <h4 className="font-bold text-[#1E293B]">The space</h4>
+                <h4 className="font-bold text-[#1E293B]">The space</h4> */}
                 <p className="text-[#64748B] leading-relaxed font-medium">
                   {showMore
                     ? displayedProperty.description
                     : `${displayedProperty.description.slice(0, 200)}...`}
                 </p>
-              </div>
+              {/* </div> */}
               <button
                 onClick={() => setShowMore(!showMore)}
                 className="px-8 py-3 bg-white border border-gray-200 rounded-full font-bold text-sm hover:bg-gray-50 transition-colors shadow-sm"

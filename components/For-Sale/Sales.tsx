@@ -120,8 +120,8 @@ const Sales = () => {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div className="space-y-2">
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-              287 Places in <br className="md:hidden" />
-              Bangalore, Karnataka
+              {total} Places in <br className="md:hidden" />
+              {filterCity || "All"}
             </h1>
             <p className="text-gray-500 font-medium">
               Easily book site visits and search properties quickly.

@@ -3,13 +3,15 @@ import React from "react";
 import JobSearchSection from "@/components/Jobs/JobSearchSection";
 import JobFilterSidebar from "@/components/Jobs/JobFilterSidebar";
 import JobCard from "@/components/Jobs/JobCard";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, User } from "lucide-react";
 import Header from "@/components/Common/Header";
 import Footer from "@/components/Common/Footer";
 import BottomNav from "@/components/BottomNav";
 
 import { EmploymentType } from "@/types/jobs";
 import { useGetJobPostsQuery } from "@/store/services/jobApiSlice";
+import { getUser } from "@/utility/Utils";
+import { BASE_URL } from "@/store/constants";
 
 export default function JobsPage() {
   const ITEMS_PER_PAGE = 4;
@@ -36,6 +38,9 @@ export default function JobsPage() {
   const totalPages = jobPosts?.data.pagination.pages || 1;
   const currentJobs = jobPosts?.data.jobs || [];
   const totalResults = jobPosts?.data.pagination.total || 0;
+
+  const user = getUser();
+  const userProfilePicture = user?.profile?.profilePicture;
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -91,7 +96,11 @@ export default function JobsPage() {
             </div>
             <div className="shrink-0">
               <img
-                src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80"
+                src={
+                  userProfilePicture
+                    ? BASE_URL + userProfilePicture
+                    : "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80"
+                }
                 alt="User Profile"
                 className="w-14 h-14 rounded-full object-cover border-4 border-white shadow-md"
               />
