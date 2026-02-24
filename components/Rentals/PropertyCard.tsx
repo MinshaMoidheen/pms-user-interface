@@ -1,20 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Heart, Star, MapPin } from "lucide-react";
 import { IProperty } from "@/types/properties";
 import { useRouter } from "next/navigation";
+import { useToggleBookmarkMutation } from "@/store/services/propertiesApiSlice";
 
 interface PropertyCardProps {
   property: IProperty;
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
-  const [isLiked, setIsLiked] = useState(false);
   const router = useRouter();
+  const [toggleBookmark] = useToggleBookmarkMutation();
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const handleLikeClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsLiked(!isLiked);
-  };
+  useEffect(() => {
+    const userJson = localStorage.getItem("user");
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      setUserId(user.id || user._id);
+    }
+  }, []);
+
+  const handleToggleBookmark = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        await toggleBookmark(property._id).unwrap();
+      } catch (error) {
+        console.error("Failed to toggle bookmark:", error);
+      }
+    },
+    [property._id, toggleBookmark, router],
+  );
 
   return (
     <div
@@ -35,13 +58,13 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
         {/* Heart Button with Toggle */}
         <button
-          onClick={handleLikeClick}
-          className="absolute top-4 right-4 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors"
+          onClick={handleToggleBookmark}
+          className="absolute top-4 right-4 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors z-10"
         >
           <Heart
             size={20}
             className={`transition-colors ${
-              isLiked
+              property.bookmarks?.includes(userId || "")
                 ? "fill-red-500 text-red-500"
                 : "fill-transparent text-white"
             }`}

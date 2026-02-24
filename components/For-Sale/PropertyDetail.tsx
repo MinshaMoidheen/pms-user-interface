@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   MapPin,
   BedDouble,
@@ -30,6 +30,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
   useGetPropertyByIdQuery,
   useGetSimilarPropertiesQuery,
+  useToggleBookmarkMutation,
 } from "@/store/services/propertiesApiSlice";
 import Header from "../Common/Header";
 import Link from "next/link";
@@ -63,6 +64,40 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
 
   const [showMore, setShowMore] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [toggleBookmark] = useToggleBookmarkMutation();
+
+  useEffect(() => {
+    const userJson = localStorage.getItem("user");
+    if (userJson && displayedProperty?.bookmarks) {
+      const user = JSON.parse(userJson);
+      const userId = user.id || user._id; // Handle potential ID field names
+      setIsSaved(displayedProperty.bookmarks.includes(userId));
+    }
+  }, [displayedProperty, id]);
+
+  const handleToggleBookmark = useCallback(async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      // If not logged in, redirect to login
+      router.push("/login");
+      return;
+    }
+
+    try {
+      // Toggle local state optimistically
+      setIsSaved((prev) => !prev);
+
+      const result = await toggleBookmark(id as string).unwrap();
+      if (!result.success) {
+        // Revert if failed
+        setIsSaved((prev) => !prev);
+      }
+    } catch (error) {
+      console.error("Failed to toggle bookmark:", error);
+      // Revert if error
+      setIsSaved((prev) => !prev);
+    }
+  }, [id, toggleBookmark, router]);
 
   if (isLoading && !displayedProperty) {
     return (
@@ -109,7 +144,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
               <Share2 size={20} className="text-gray-600" />
             </button>
             <button
-              onClick={() => setIsSaved(!isSaved)}
+              onClick={handleToggleBookmark}
               className={`p-2 rounded-lg transition-all ${isSaved ? "bg-blue-50 text-blue-600" : "hover:bg-gray-100 text-gray-600"}`}
             >
               <Bookmark size={20} className={isSaved ? "fill-blue-600" : ""} />

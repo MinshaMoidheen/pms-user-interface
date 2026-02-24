@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Star,
   ChevronRight,
@@ -13,9 +13,11 @@ import {
 import {
   GetPropertiesParams,
   useGetPropertiesQuery,
+  useToggleBookmarkMutation,
 } from "@/store/services/propertiesApiSlice";
 import { IProperty } from "@/types/properties";
 import { getFlexibleField } from "@/utility/propertyUtils";
+import { useRouter } from "next/navigation";
 
 interface StaysSectionProps {
   city: string;
@@ -23,6 +25,7 @@ interface StaysSectionProps {
 
 const StaysSection: React.FC<StaysSectionProps> = ({ city }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
@@ -63,6 +66,35 @@ const StaysSection: React.FC<StaysSectionProps> = ({ city }) => {
   const stays = data?.data?.properties ?? [];
   const pagination = data?.data?.pagination;
   const total = pagination?.total ?? 0;
+
+  const [toggleBookmark] = useToggleBookmarkMutation();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userJson = localStorage.getItem("user");
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      setUserId(user.id || user._id);
+    }
+  }, []);
+
+  const handleToggleBookmark = useCallback(
+    async (e: React.MouseEvent, id: string) => {
+      e.stopPropagation();
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        await toggleBookmark(id).unwrap();
+      } catch (error) {
+        console.error("Failed to toggle bookmark:", error);
+      }
+    },
+    [toggleBookmark, router],
+  );
 
   return (
     <section className="md:py-12 sm:py-1 bg-white">
@@ -124,9 +156,18 @@ const StaysSection: React.FC<StaysSectionProps> = ({ city }) => {
                     {/* <div className="absolute top-4 left-4 bg-[#FF5A3C] text-white text-[10px] font-bold px-2 py-0.5 rounded">
                     {stay.discount}
                   </div> */}
-                    <div className="absolute top-4 right-4 bg-white/40 backdrop-blur-md p-1.5 rounded-full hover:bg-white/60 transition-colors">
-                      <Heart className="w-4 h-4 text-white fill-white" />
-                    </div>
+                    <button
+                      onClick={(e) => handleToggleBookmark(e, stay._id)}
+                      className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full cursor-pointer hover:bg-white transition-colors z-10"
+                    >
+                      <Heart
+                        className={`w-4 h-4 ${
+                          stay.bookmarks?.includes(userId || "")
+                            ? "fill-red-500 text-red-500"
+                            : "text-slate-600"
+                        }`}
+                      />
+                    </button>
                   </div>
 
                   <h3 className="text-lg font-bold text-slate-900 mb-1 line-clamp-1">

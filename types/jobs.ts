@@ -139,3 +139,11 @@ export interface getMyApplicationsResponse {
     };
   };
 }
+export interface toggleBookmarkResponse {
+  success: boolean;
+  message: string;
+  data: {
+    isBookmarked: boolean;
+    bookmarksCount: number;
+  };
+}

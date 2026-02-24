@@ -22,6 +22,9 @@ export default function JobsPage() {
   const [employmentType, setEmploymentType] = React.useState<
     EmploymentType | undefined
   >(undefined);
+  const [userProfilePicture, setUserProfilePicture] = React.useState<
+    string | null
+  >(null);
 
   const {
     data: jobPosts,
@@ -39,8 +42,12 @@ export default function JobsPage() {
   const currentJobs = jobPosts?.data.jobs || [];
   const totalResults = jobPosts?.data.pagination.total || 0;
 
-  const user = getUser();
-  const userProfilePicture = user?.profile?.profilePicture;
+  React.useEffect(() => {
+    const user = getUser();
+    if (user?.profile?.profilePicture) {
+      setUserProfilePicture(user.profile.profilePicture);
+    }
+  }, []);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {

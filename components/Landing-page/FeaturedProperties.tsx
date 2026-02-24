@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Star,
@@ -20,6 +20,7 @@ import Link from "next/link";
 import {
   GetPropertiesParams,
   useGetPropertiesQuery,
+  useToggleBookmarkMutation,
 } from "@/store/services/propertiesApiSlice";
 import { IProperty } from "@/types/properties";
 import { getFlexibleField } from "@/utility/propertyUtils";
@@ -50,6 +51,35 @@ const FeaturedProperties: React.FC = () => {
   const properties = data?.data?.properties ?? [];
   const pagination = data?.data?.pagination;
   const total = pagination?.total ?? 0;
+
+  const [toggleBookmark] = useToggleBookmarkMutation();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userJson = localStorage.getItem("user");
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      setUserId(user.id || user._id);
+    }
+  }, []);
+
+  const handleToggleBookmark = useCallback(
+    async (e: React.MouseEvent, id: string) => {
+      e.stopPropagation();
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        await toggleBookmark(id).unwrap();
+      } catch (error) {
+        console.error("Failed to toggle bookmark:", error);
+      }
+    },
+    [toggleBookmark, router],
+  );
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
@@ -131,8 +161,17 @@ const FeaturedProperties: React.FC = () => {
                     <div className="absolute top-3 left-3 bg-[#4ADE80] text-white text-xs px-3 py-1 rounded font-bold tracking-wide">
                       {prop.type}
                     </div>
-                    <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full cursor-pointer hover:bg-white transition-colors">
-                      <Heart className="w-4 h-4 text-slate-600" />
+                    <button
+                      onClick={(e) => handleToggleBookmark(e, prop._id)}
+                      className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full cursor-pointer hover:bg-white transition-colors z-10"
+                    >
+                      <Heart
+                        className={`w-4 h-4 ${
+                          prop.bookmarks?.includes(userId || "")
+                            ? "fill-red-500 text-red-500"
+                            : "text-slate-600"
+                        }`}
+                      />
                     </button>
                   </div>
 

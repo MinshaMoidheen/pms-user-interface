@@ -97,3 +97,13 @@ export interface getSimilarPropertiesResponse {
     properties: IProperty[];
   };
 }
+
+
+export interface toggleBookmarkResponse {
+  success: boolean;
+  message: string;
+  data: {
+    isBookmarked: boolean;
+    bookmarksCount: number;
+  }
+}

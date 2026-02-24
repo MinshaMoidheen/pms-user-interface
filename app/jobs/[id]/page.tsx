@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ChevronLeft,
@@ -19,15 +19,40 @@ import {
 import Header from "@/components/Common/Header";
 import Footer from "@/components/Common/Footer";
 import ApplyJobModal from "@/components/Jobs/ApplyJobModal";
-import { useSavedJobs } from "@/hooks/useSavedJobs";
-import { useGetJobByIdQuery } from "@/store/services/jobApiSlice";
+import {
+  useGetJobByIdQuery,
+  useToggleJobBookmarkMutation,
+} from "@/store/services/jobApiSlice";
 
 export default function JobDetailsPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-  const { isSaved, toggleSave } = useSavedJobs();
+  const [toggleBookmark] = useToggleJobBookmarkMutation();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userJson = localStorage.getItem("user");
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      setUserId(user.id || user._id);
+    }
+  }, []);
+
+  const handleToggleBookmark = useCallback(async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      await toggleBookmark(id).unwrap();
+    } catch (error) {
+      console.error("Failed to toggle bookmark:", error);
+    }
+  }, [id, toggleBookmark, router]);
 
   const { data: jobResponse, isLoading, error } = useGetJobByIdQuery(id);
 
@@ -157,11 +182,17 @@ export default function JobDetailsPage() {
             {/* Apply Button */}
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-4 md:mt-0">
               <button
-                onClick={() => toggleSave(job._id)}
-                className={`p-3 border rounded-xl transition-colors ${isSaved(job._id) ? "border-blue-200 bg-blue-50 text-blue-600" : "border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-600"}`}
+                onClick={handleToggleBookmark}
+                className={`p-3 border rounded-xl transition-colors ${
+                  job.bookmarks?.includes(userId || "")
+                    ? "border-blue-200 bg-blue-50 text-blue-600"
+                    : "border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-600"
+                }`}
               >
                 <Bookmark
-                  className={`w-5 h-5 ${isSaved(job._id) ? "fill-current" : ""}`}
+                  className={`w-5 h-5 ${
+                    job.bookmarks?.includes(userId || "") ? "fill-current" : ""
+                  }`}
                 />
               </button>
               <button

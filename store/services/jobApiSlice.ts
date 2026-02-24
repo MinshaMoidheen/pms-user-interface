@@ -8,6 +8,7 @@ import type {
   applyJobResponse,
   getMyApplicationsResponse,
   applyJobRequest,
+  toggleBookmarkResponse,
 } from "@/types/jobs";
 
 export interface GetJobsParams {
@@ -70,14 +71,17 @@ const jobApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
-    getMyApplications: builder.query<getMyApplicationsResponse, {page: number; limit: number}>({
-      query: ({page = 1, limit = 10}) => ({
+    getMyApplications: builder.query<
+      getMyApplicationsResponse,
+      { page: number; limit: number }
+    >({
+      query: ({ page = 1, limit = 10 }) => ({
         url: `${JOBS_URL}/my-applications`,
         method: "GET",
         params: {
-            page,
-            limit
-        }
+          page,
+          limit,
+        },
       }),
       providesTags: (result) =>
         result?.data?.applications
@@ -90,6 +94,17 @@ const jobApiSlice = apiSlice.injectEndpoints({
             ]
           : [{ type: "Applications", id: "LIST" }],
     }),
+
+    toggleJobBookmark: builder.mutation<
+      toggleBookmarkResponse,
+      string | undefined
+    >({
+      query: (id) => ({
+        url: `${JOBS_URL}/${id}/bookmark`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, id) => [{ type: "Jobs", id }],
+    }),
   }),
 });
 
@@ -98,4 +113,5 @@ export const {
   useGetJobByIdQuery,
   useApplyJobMutation,
   useGetMyApplicationsQuery,
+  useToggleJobBookmarkMutation,
 } = jobApiSlice;

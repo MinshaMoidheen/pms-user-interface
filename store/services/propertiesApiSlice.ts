@@ -1,13 +1,14 @@
 import { apiSlice } from "./apiSlice";
 import { PROPERTIES_URL } from "../constants";
 
-import type {
-  getPropertiesResponse,
-  getPropertyByIdResponse,
-  getSimilarPropertiesResponse,
-  IProperty,
-  PropertyCategory,
-  PropertyType,
+import {
+  toggleBookmarkResponse,
+  type getPropertiesResponse,
+  type getPropertyByIdResponse,
+  type getSimilarPropertiesResponse,
+  type IProperty,
+  type PropertyCategory,
+  type PropertyType,
 } from "@/types/properties";
 
 export interface GetPropertiesParams {
@@ -105,6 +106,14 @@ const propertiesApiSlice = apiSlice.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Properties", id }],
     }),
 
+    toggleBookmark: builder.mutation<toggleBookmarkResponse, string | undefined>({
+      query: (id) => ({
+        url: `${PROPERTIES_URL}/${id}/bookmark`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, id) => [{ type: "Properties", id }],
+    }),
+
   }),
 });
 
@@ -112,4 +121,5 @@ export const {
   useGetPropertiesQuery,
   useGetPropertyByIdQuery,
   useGetSimilarPropertiesQuery,
+  useToggleBookmarkMutation,
 } = propertiesApiSlice;

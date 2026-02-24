@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Heart,
   Star,
@@ -16,6 +16,7 @@ import {
 import { IProperty } from "@/types/properties";
 import { useRouter } from "next/navigation";
 import { getFlexibleField } from "@/utility/propertyUtils";
+import { useToggleBookmarkMutation } from "@/store/services/propertiesApiSlice";
 
 interface SalesCardProps {
   sales: IProperty;
@@ -23,8 +24,17 @@ interface SalesCardProps {
 
 const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
   const router = useRouter();
-  const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
-  const [isSaved, setIsSaved] = React.useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [toggleBookmark] = useToggleBookmarkMutation();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userJson = localStorage.getItem("user");
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      setUserId(user.id || user._id);
+    }
+  }, []);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -39,10 +49,23 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
     );
   };
 
-  const handleSave = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsSaved(!isSaved);
-  };
+  const handleToggleBookmark = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        await toggleBookmark(sales._id).unwrap();
+      } catch (error) {
+        console.error("Failed to toggle bookmark:", error);
+      }
+    },
+    [sales._id, toggleBookmark, router],
+  );
 
   return (
     <div
@@ -67,14 +90,19 @@ const SalesCard: React.FC<SalesCardProps> = ({ sales }) => {
 
           {/* Heart/Bookmark */}
           <button
-            onClick={handleSave}
-            className={`absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md transition-all ${
-              isSaved
+            onClick={handleToggleBookmark}
+            className={`absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md transition-all z-10 ${
+              sales.bookmarks?.includes(userId || "")
                 ? "bg-red-500 text-white opacity-100"
                 : "bg-white/30 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-white hover:text-red-500"
             }`}
           >
-            <Heart size={20} className={isSaved ? "fill-white" : ""} />
+            <Heart
+              size={20}
+              className={
+                sales.bookmarks?.includes(userId || "") ? "fill-white" : ""
+              }
+            />
           </button>
 
           {/* Carousel Arrows */}

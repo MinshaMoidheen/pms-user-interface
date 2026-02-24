@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MapPin, Bookmark } from "lucide-react";
-import { useSavedJobs } from "@/hooks/useSavedJobs";
+import { useToggleJobBookmarkMutation } from "@/store/services/jobApiSlice";
 import { IJobPost } from "@/types/jobs";
 
 // Extend Job for props, though JobCard likely receives Job properties directly
@@ -20,9 +20,38 @@ const JobCard: React.FC<IJobPost> = ({
   employmentType,
   salary,
   contact,
+  bookmarks,
 }) => {
   const router = useRouter();
-  const { isSaved, toggleSave } = useSavedJobs();
+  const [toggleBookmark] = useToggleJobBookmarkMutation();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userJson = localStorage.getItem("user");
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      setUserId(user.id || user._id);
+    }
+  }, []);
+
+  const handleToggleBookmark = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        await toggleBookmark(_id).unwrap();
+      } catch (error) {
+        console.error("Failed to toggle bookmark:", error);
+      }
+    },
+    [_id, toggleBookmark, router],
+  );
 
   const getBadgeStyles = (type: string) => {
     const lowerType = type.toLowerCase();
@@ -86,15 +115,17 @@ const JobCard: React.FC<IJobPost> = ({
           </div>
 
           <button
-            className={`p-2 rounded-xl transition-colors ${isSaved(_id) ? "bg-blue-50 text-blue-600" : "text-slate-300 hover:text-slate-400 bg-slate-50/50"}`}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleSave(_id);
-            }}
+            className={`p-2 rounded-xl transition-colors z-10 ${
+              bookmarks?.includes(userId || "")
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-300 hover:text-slate-400 bg-slate-50/50"
+            }`}
+            onClick={handleToggleBookmark}
           >
             <Bookmark
-              className={`w-5 h-5 ${isSaved(_id) ? "fill-current" : ""}`}
+              className={`w-5 h-5 ${
+                bookmarks?.includes(userId || "") ? "fill-current" : ""
+              }`}
             />
           </button>
         </div>
