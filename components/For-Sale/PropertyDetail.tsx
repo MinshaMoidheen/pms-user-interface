@@ -36,6 +36,7 @@ import Header from "../Common/Header";
 import Link from "next/link";
 import Footer from "../Common/Footer";
 import FeaturedProperties from "../Landing-page/FeaturedProperties";
+import ReviewsSection from "../Common/ReviewsSection";
 import { IProperty } from "@/types/properties";
 import { getFlexibleField } from "@/utility/propertyUtils";
 
@@ -265,7 +266,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
               <div className="flex items-center justify-between sm:justify-end gap-6 md:gap-10 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0">
                 <div className="text-center">
                   <span className="text-lg md:text-xl font-bold text-[#1E293B]">
-                    4.5
+                    {displayedProperty.averageRating}
                   </span>
                   <div className="flex gap-0.5 mt-0.5">
                     {[...Array(5)].map((_, i) => (
@@ -273,7 +274,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                         key={i}
                         size={10}
                         className={
-                          i < 4
+                          i < displayedProperty.averageRating
                             ? "fill-orange-400 text-orange-400"
                             : "text-gray-200"
                         }
@@ -283,7 +284,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 </div>
                 <div className="text-center border-l pl-6 md:pl-10 border-gray-100">
                   <span className="text-lg md:text-xl font-bold text-[#1E293B]">
-                    25
+                    {displayedProperty.reviewCount}
                   </span>
                   <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                     Reviews
@@ -676,6 +677,12 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 </div>
               </div>
             </div>
+
+            {/* Reviews Section */}
+            <ReviewsSection
+              targetId={displayedProperty._id}
+              targetType="PROPERTY"
+            />
           </div>
 
           {/* Right Column: Contact Sidebar */}
