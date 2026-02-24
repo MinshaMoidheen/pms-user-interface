@@ -10,6 +10,7 @@ import {
   useVerifyOTPMutation,
 } from "@/store/services/authApiSlice";
 import OTPInput from "@/components/OTPInput";
+import { toast } from "react-hot-toast";
 
 const RegisterPage = () => {
   const router = useRouter();
@@ -38,6 +39,9 @@ const RegisterPage = () => {
       setStep("otp");
     } catch (err: any) {
       console.error("Registration failed:", err);
+      toast.error(
+        err?.data?.message || "Registration failed. Please try again.",
+      );
     }
   };
 
@@ -49,6 +53,7 @@ const RegisterPage = () => {
         router.push("/"); // Redirect to home on success
       } catch (err: any) {
         console.error("Verification failed:", err);
+        toast.error(err?.data?.message || "Invalid OTP. Please try again.");
       }
     }
   };
@@ -110,7 +115,6 @@ const RegisterPage = () => {
                 onChange={handleChange}
               />
             </div>
-            {isError && <p className="text-red-500 text-sm mt-2">{isError}</p>}
           </div>
 
           <div className="pt-2">
@@ -136,7 +140,7 @@ const RegisterPage = () => {
           </div>
         </form>
       ) : (
-        <form className="space-y-8"  onSubmit={handleOtpSubmit}>
+        <form className="space-y-8" onSubmit={handleOtpSubmit}>
           <div>
             <div className="flex justify-center mb-6">
               <OTPInput length={6} value={otp} onChange={setOtp} />

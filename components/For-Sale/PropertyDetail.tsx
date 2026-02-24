@@ -738,11 +738,14 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {similarPropertiesList?.slice(0, 4).map((sale) => (
-              <div
-                key={sale._id}
-                onClick={() => router.push(`/for-sale/${sale._id}`)}
-                className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
+            {similarPropertiesList?.length === 0 ? (
+              <h4 className="text-center">No similar properties found</h4>
+            ) : (
+              similarPropertiesList?.slice(0, 4).map((sale) => (
+                <div
+                  key={sale._id}
+                  onClick={() => router.push(`/for-sale/${sale._id}`)}
+                  className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
               >
                 <div className="relative aspect-4/3 overflow-hidden">
                   <img
@@ -810,7 +813,8 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            ),
+          ))}
           </div>
         </div>
       </main>

@@ -10,6 +10,7 @@ import {
   useSendOTPMutation,
   useVerifyOTPMutation,
 } from "@/store/services/authApiSlice";
+import { toast } from "react-hot-toast";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -30,7 +31,9 @@ const LoginPage = () => {
         setStep("otp");
       } catch (err: any) {
         console.error("Failed to send OTP:", err);
-        // Handle error (e.g., show error message)
+        toast.error(
+          err?.data?.message || "Failed to send OTP. Please try again.",
+        );
       }
     }
   };
@@ -43,6 +46,7 @@ const LoginPage = () => {
         router.push("/"); // Redirect to home on success
       } catch (err: any) {
         console.error("Verification failed:", err);
+        toast.error(err?.data?.message || "Invalid OTP. Please try again.");
       }
     }
   };
@@ -124,7 +128,6 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-          
               className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
             >
               {loading ? "Verifying..." : "Verify & Login"}

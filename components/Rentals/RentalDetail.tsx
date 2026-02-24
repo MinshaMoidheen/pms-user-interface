@@ -749,9 +749,12 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {similarPropertiesList?.slice(0, 4).map((sale) => (
-              <div
-                key={sale._id}
+            {similarPropertiesList?.length === 0 ? (
+              <h4 className="text-center">No similar properties found</h4>
+            ) : (
+              similarPropertiesList?.slice(0, 4).map((sale) => (
+                <div
+                  key={sale._id}
                 onClick={() => router.push(`/rentals/${sale._id}`)}
                 className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
               >
@@ -798,28 +801,27 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <div className="flex items-center gap-1">
-                      <Star
-                        size={14}
-                        className="fill-orange-400 text-orange-400"
-                      />
-                      <Star
-                        size={14}
-                        className="fill-orange-400 text-orange-400"
-                      />
-                      <Star
-                        size={14}
-                        className="fill-orange-400 text-orange-400"
-                      />
-                      <Star
-                        size={14}
-                        className="fill-orange-400 text-orange-400"
-                      />
-                      <span className="text-[10px] font-black ml-1">(42)</span>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={14}
+                          className={`${
+                            sale.averageRating >= star
+                              ? "fill-orange-400 text-orange-400"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+
+                      <span className="text-[10px] font-black ml-1">
+                        ({sale.reviewCount})
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
+            ),
+          ))}
           </div>
         </div>
       </main>
