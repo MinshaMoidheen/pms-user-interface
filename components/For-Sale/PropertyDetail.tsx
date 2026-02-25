@@ -40,6 +40,7 @@ import ReviewsSection from "../Common/ReviewsSection";
 import { IProperty } from "@/types/properties";
 import { getFlexibleField } from "@/utility/propertyUtils";
 import { useGetBrokerProfileQuery } from "@/store/services/usersApiSlice";
+import { BASE_URL } from "@/store/constants";
 
 interface PropertyDetailProps {
   id: string;
@@ -65,13 +66,13 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
   const displayedProperty = property?.data?.property;
 
   const { data: brokerProfile } = useGetBrokerProfileQuery(
-      displayedProperty?.postedBy?._id,
-      {
-        skip: !displayedProperty?.postedBy?._id,
-      },
-    );
-  
-    const displayedBrokerProfile = brokerProfile?.data;
+    displayedProperty?.postedBy?._id,
+    {
+      skip: !displayedProperty?.postedBy?._id,
+    },
+  );
+
+  const displayedBrokerProfile = brokerProfile?.data;
 
   const [showMore, setShowMore] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -254,8 +255,8 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
               <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
                 <div className="relative shrink-0">
                   <img
-                    src="https://randomuser.me/api/portraits/men/32.jpg"
-                    alt="Agent"
+                    src={`${BASE_URL}${displayedBrokerProfile?.agent?.profilePicture}`}
+                    alt={displayedBrokerProfile?.agent?.name}
                     className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white shadow-sm"
                   />
                   <div className="absolute bottom-0.5 right-0.5 w-3 h-3 md:w-4 md:h-4 bg-green-500 border-2 border-white rounded-full"></div>
@@ -550,8 +551,8 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 <div className="w-full md:w-[340px] bg-[#FFF5F2] p-8 rounded-[40px] flex flex-col items-center">
                   <div className="relative mb-4">
                     <img
-                      src="https://randomuser.me/api/portraits/men/32.jpg"
-                      alt="Agent"
+                      src={`${BASE_URL}${displayedBrokerProfile?.agent?.profilePicture}`}
+                      alt={displayedBrokerProfile?.agent?.name}
                       className="w-24 h-24 rounded-full object-cover border-2 border-white shadow-sm"
                     />
                     <div className="absolute bottom-1 right-1 w-6 h-6 border-4 border-white rounded-full flex items-center justify-center">
@@ -623,7 +624,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                       About {displayedBrokerProfile?.agent?.name}
                     </h4>
                     <p className="text-[#64748B] leading-relaxed font-medium text-sm md:text-base text-center md:text-left">
-                        {displayedBrokerProfile?.agent?.bio}
+                      {displayedBrokerProfile?.agent?.bio}
                     </p>
                   </div>
 
@@ -640,7 +641,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                           {displayedBrokerProfile?.stats?.forSale}
+                          {displayedBrokerProfile?.stats?.forSale}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -662,7 +663,9 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          {displayedBrokerProfile?.handled?.propertyTypes.join(", ")}
+                          {displayedBrokerProfile?.handled?.propertyTypes.join(
+                            ", ",
+                          )}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -673,7 +676,9 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          {displayedBrokerProfile?.handled?.serviceAreas.join(", ")}
+                          {displayedBrokerProfile?.handled?.serviceAreas.join(
+                            ", ",
+                          )}
                         </span>
                       </div>
                     </div>
@@ -750,75 +755,75 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                   key={sale._id}
                   onClick={() => router.push(`/for-sale/${sale._id}`)}
                   className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
-              >
-                <div className="relative aspect-4/3 overflow-hidden">
-                  <img
-                    src={sale.images[0]}
-                    alt={sale.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <span className="bg-[#22C55E] text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shadow-sm">
-                      Popular
-                    </span>
-                  </div>
-                  <button className="absolute top-3 right-3 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all border border-white/20">
-                    <Bookmark size={16} />
-                  </button>
-                </div>
-                <div className="p-4 space-y-2">
-                  <h4 className="font-bold text-sm text-gray-900 line-clamp-1">
-                    {sale.title}
-                  </h4>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-black text-[#FF5A3D]">
-                      ₹{sale.price.toLocaleString()}
-                    </span>
-                  </div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    {sale.flexibleFields?.propertyType}
-                  </p>
-                  <div className="flex items-center gap-4 py-2 border-y border-gray-50">
-                    <div className="flex items-center gap-1.5">
-                      <BedDouble size={14} className="text-gray-400" />
-                      <span className="text-[10px] font-bold">
-                        {getFlexibleField(sale.flexibleFields, [
-                          "bedrooms",
-                          "bedroom",
-                        ])}{" "}
-                        Bedrooms
+                >
+                  <div className="relative aspect-4/3 overflow-hidden">
+                    <img
+                      src={sale.images[0]}
+                      alt={sale.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <span className="bg-[#22C55E] text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shadow-sm">
+                        Popular
                       </span>
                     </div>
-                    <div className="flex items-center gap-1.5 border-l pl-4 border-gray-100">
-                      <Ruler size={14} className="text-gray-400 rotate-90" />
-                      <span className="text-[10px] font-bold">
-                        {sale.area?.value} {sale?.area?.unit}
+                    <button className="absolute top-3 right-3 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all border border-white/20">
+                      <Bookmark size={16} />
+                    </button>
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-bold text-sm text-gray-900 line-clamp-1">
+                      {sale.title}
+                    </h4>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-lg font-black text-[#FF5A3D]">
+                        ₹{sale.price.toLocaleString()}
                       </span>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          size={14}
-                          className={`${
-                            sale.averageRating >= star
-                              ? "fill-orange-400 text-orange-400"
-                              : "text-gray-300"
-                          }`}
-                        />
-                      ))}
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                      {sale.flexibleFields?.propertyType}
+                    </p>
+                    <div className="flex items-center gap-4 py-2 border-y border-gray-50">
+                      <div className="flex items-center gap-1.5">
+                        <BedDouble size={14} className="text-gray-400" />
+                        <span className="text-[10px] font-bold">
+                          {getFlexibleField(sale.flexibleFields, [
+                            "bedrooms",
+                            "bedroom",
+                          ])}{" "}
+                          Bedrooms
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 border-l pl-4 border-gray-100">
+                        <Ruler size={14} className="text-gray-400 rotate-90" />
+                        <span className="text-[10px] font-bold">
+                          {sale.area?.value} {sale?.area?.unit}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            size={14}
+                            className={`${
+                              sale.averageRating >= star
+                                ? "fill-orange-400 text-orange-400"
+                                : "text-gray-300"
+                            }`}
+                          />
+                        ))}
 
-                      <span className="text-[10px] font-black ml-1">
-                        ({sale.reviewCount})
-                      </span>
+                        <span className="text-[10px] font-black ml-1">
+                          ({sale.reviewCount})
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ),
-          ))}
+              ))
+            )}
           </div>
         </div>
       </main>

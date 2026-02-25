@@ -27,6 +27,7 @@ import { useGetBrokerProfileQuery } from "@/store/services/usersApiSlice";
 import ReviewsSection from "../Common/ReviewsSection";
 import { IProperty } from "@/types/properties";
 import { getFlexibleField } from "@/utility/propertyUtils";
+import { BASE_URL } from "@/store/constants";
 
 interface RentalDetailProps {
   id: string;
@@ -251,8 +252,8 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
               <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
                 <div className="relative shrink-0">
                   <img
-                    src="https://randomuser.me/api/portraits/men/32.jpg"
-                    alt="Agent"
+                    src={`${BASE_URL}${displayedBrokerProfile?.agent?.profilePicture}`}
+                    alt={displayedBrokerProfile?.agent?.name}
                     className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white shadow-sm"
                   />
                   <div className="absolute bottom-0.5 right-0.5 w-3 h-3 md:w-4 md:h-4 bg-green-500 border-2 border-white rounded-full"></div>
@@ -548,8 +549,8 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                 <div className="w-full md:w-[340px] bg-[#FFF5F2] p-8 rounded-[40px] flex flex-col items-center">
                   <div className="relative mb-4">
                     <img
-                      src="https://randomuser.me/api/portraits/men/32.jpg"
-                      alt="Agent"
+                      src={`${BASE_URL}${displayedBrokerProfile?.agent?.profilePicture}`}
+                      alt={displayedBrokerProfile?.agent?.name}
                       className="w-24 h-24 rounded-full object-cover border-2 border-white shadow-sm"
                     />
                     <div className="absolute bottom-1 right-1 w-6 h-6 border-4 border-white rounded-full flex items-center justify-center">
@@ -596,7 +597,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                     </div>
                     <div className="flex flex-col items-start pl-6">
                       <span className="text-2xl font-bold text-[#1E293B]">
-                       {displayedBrokerProfile?.agent?.reviewCount}
+                        {displayedBrokerProfile?.agent?.reviewCount}
                       </span>
                       <span className="text-sm font-medium text-gray-500">
                         Reviews
@@ -660,7 +661,9 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          {displayedBrokerProfile?.handled?.propertyTypes.join(", ")}
+                          {displayedBrokerProfile?.handled?.propertyTypes.join(
+                            ", ",
+                          )}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -671,7 +674,9 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          {displayedBrokerProfile?.handled?.serviceAreas.join(", ")}
+                          {displayedBrokerProfile?.handled?.serviceAreas.join(
+                            ", ",
+                          )}
                         </span>
                       </div>
                     </div>
