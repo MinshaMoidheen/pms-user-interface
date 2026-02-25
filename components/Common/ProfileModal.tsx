@@ -498,13 +498,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                             Current Plan
                           </p>
                           <h3 className="text-3xl font-black text-slate-900">
-                            {currentSubscription?.name || "No Active Plan"}
+                            {currentSubscription?.subscriptionPlan?.name || "No Active Plan"}
                           </h3>
                           {currentSubscription && (
                             <p className="text-slate-400 text-sm mt-1">
-                              {currentSubscription.currency}
-                              {currentSubscription.price} /{" "}
-                              {currentSubscription.duration} days
+                              {currentSubscription.subscriptionPlan.currency}
+                              {currentSubscription.subscriptionPlan.price} /{" "}
+                              {currentSubscription.subscriptionPlan.duration} days
                             </p>
                           )}
                         </div>
@@ -522,7 +522,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                                       new Date(
                                         currentSubscription.createdAt,
                                       ).getTime() +
-                                        currentSubscription.duration *
+                                        currentSubscription.subscriptionPlan.duration *
                                           24 *
                                           60 *
                                           60 *
@@ -583,7 +583,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                       </h4>
                       <ul className="space-y-4">
                         {currentSubscription ? (
-                          Object.entries(currentSubscription.features)
+                          Object.entries(currentSubscription.subscriptionPlan.features)
                             .filter(([_, value]) => value === true)
                             .map(([key, _], i) => (
                               <li key={i} className="flex items-center gap-3">

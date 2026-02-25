@@ -46,8 +46,9 @@ export interface getSubscriptionPlansResponse {
 export type UserSubscriptionStatus = 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'PENDING_PAYMENT';
 
 export interface IUserSubscription {
+  _id: string;
   user: string;
-  subscriptionPlan: string;
+  subscriptionPlan: ISubscriptionPlan;
   subscriptionType: 'BASIC' | 'PREMIUM' | 'ENTERPRISE';
   createdBy: string; // User who created
   updatedBy?: string; // User who last updated
