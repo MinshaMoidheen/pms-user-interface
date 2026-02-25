@@ -251,6 +251,16 @@ const StaysSection: React.FC<StaysSectionProps> = ({ city }) => {
             <h5 className="text-center text-black">No stays found!</h5>
           )}
         </div>
+        {city === "Kochi" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex justify-center">
+            <button
+              onClick={() => router.push("/rentals")}
+              className="bg-[#FF5A3C] text-white px-8 py-3 rounded-full font-bold hover:bg-orange-600 transition-colors"
+            >
+              Load More
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

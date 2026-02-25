@@ -55,7 +55,7 @@ const JobCard: React.FC<IJobPost> = ({
 
   const getBadgeStyles = (type: string) => {
     const lowerType = type.toLowerCase();
-    if (lowerType === "full-time") {
+    if (lowerType === "full-time" || lowerType === "FULL_TIME") {
       return "bg-blue-50 text-blue-600";
     }
     if (lowerType === "part-time" || lowerType === "internship") {
@@ -69,7 +69,7 @@ const JobCard: React.FC<IJobPost> = ({
       onClick={() => router.push(`/jobs/${_id}`)}
       className="block relative group cursor-pointer"
     >
-      <div className="bg-white p-5 rounded-2xl border border-gray-100 hover:shadow-md transition-shadow duration-300">
+      <div className="bg-white p-5 rounded-2xl border border-gray-300 hover:shadow-md transition-shadow duration-300">
         {/* Header: Title and Work Mode Badge */}
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-[17px] font-bold text-slate-900 pr-4 leading-snug">
@@ -86,8 +86,8 @@ const JobCard: React.FC<IJobPost> = ({
           </span>
           <span className="text-slate-400 font-medium text-sm">
             Salary:{" "}
-            <span className="text-slate-600 font-semibold">
-              {salary?.max ? `₹${salary.max}` : "Not Specified"}
+            <span className="text-blue-600 font-semibold">
+              {salary?.max ? `₹${salary.min} - ₹${salary.max}` : "Not Specified"}
             </span>
           </span>
         </div>

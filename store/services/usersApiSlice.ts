@@ -1,6 +1,6 @@
 import { apiSlice } from "./apiSlice";
 import { USER_URL } from "../constants";
-import { getProfileResponse } from "@/types/user";
+import { getBrokerProfileResponse, getProfileResponse } from "@/types/user";
 
 const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -22,7 +22,15 @@ const usersApiSlice = apiSlice.injectEndpoints({
         invalidatesTags: (result, error, { body }) => [
             { type: "Users", id: "LIST" },
         ],
-    })
+    }),
+
+    getBrokerProfile: builder.query<getBrokerProfileResponse, string | undefined>({
+        query: (id) => ({
+            url: `${USER_URL}/broker/${id}`,
+            method: "GET",
+        }),
+        providesTags: (result, error, id) => [{ type: "Users", id: "LIST" }],
+    }),
     
 
   }),
@@ -30,5 +38,6 @@ const usersApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetProfileQuery,
-  useUpdateProfileMutation
+  useUpdateProfileMutation,
+  useGetBrokerProfileQuery,
 } = usersApiSlice;

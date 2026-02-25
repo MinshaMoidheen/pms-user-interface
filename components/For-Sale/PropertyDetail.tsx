@@ -39,6 +39,7 @@ import FeaturedProperties from "../Landing-page/FeaturedProperties";
 import ReviewsSection from "../Common/ReviewsSection";
 import { IProperty } from "@/types/properties";
 import { getFlexibleField } from "@/utility/propertyUtils";
+import { useGetBrokerProfileQuery } from "@/store/services/usersApiSlice";
 
 interface PropertyDetailProps {
   id: string;
@@ -62,6 +63,15 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const displayedProperty = property?.data?.property;
+
+  const { data: brokerProfile } = useGetBrokerProfileQuery(
+      displayedProperty?.postedBy?._id,
+      {
+        skip: !displayedProperty?.postedBy?._id,
+      },
+    );
+  
+    const displayedBrokerProfile = brokerProfile?.data;
 
   const [showMore, setShowMore] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -197,7 +207,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                   ₹{displayedProperty.price.toLocaleString()}
                 </span>
                 <span className="text-sm text-gray-500 font-medium whitespace-nowrap">
-                  {displayedProperty.priceUnit}
+                  /{displayedProperty.priceUnit}
                 </span>
               </div>
 
@@ -570,7 +580,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                   <div className="grid grid-cols-2 w-full mb-8 relative">
                     <div className="flex flex-col items-end pr-6 border-r border-[#FED7AA]/30">
                       <span className="text-2xl font-bold text-[#1E293B]">
-                        4.5
+                        {displayedBrokerProfile?.agent?.rating}
                       </span>
                       <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
@@ -578,7 +588,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                             key={i}
                             size={14}
                             className={
-                              i < 4
+                              i < (displayedBrokerProfile?.agent?.rating || 0)
                                 ? "fill-orange-400 text-orange-400"
                                 : "fill-orange-400/50 text-orange-400/50"
                             }
@@ -588,7 +598,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                     </div>
                     <div className="flex flex-col items-start pl-6">
                       <span className="text-2xl font-bold text-[#1E293B]">
-                        25
+                        {displayedBrokerProfile?.agent?.reviewCount}
                       </span>
                       <span className="text-sm font-medium text-gray-500">
                         Reviews
@@ -610,16 +620,10 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                 <div className="flex-1 space-y-6 md:space-y-10 pt-2 w-full">
                   <div>
                     <h4 className="text-xl md:text-2xl font-bold text-[#1E293B] mb-4 text-center md:text-left">
-                      About {displayedProperty.contact.name}
+                      About {displayedBrokerProfile?.agent?.name}
                     </h4>
                     <p className="text-[#64748B] leading-relaxed font-medium text-sm md:text-base text-center md:text-left">
-                      {displayedProperty.contact.name} is a verified real estate
-                      agent known for closing high value deals and matching
-                      clients with the right properties faster than the market
-                      average. With 8+ years in real estate, he has helped 300+
-                      families find homes and assisted numerous owners in
-                      selling and renting their properties at competitive
-                      prices.
+                        {displayedBrokerProfile?.agent?.bio}
                     </p>
                   </div>
 
@@ -636,7 +640,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          12
+                           {displayedBrokerProfile?.stats?.forSale}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -647,7 +651,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          4
+                          {displayedBrokerProfile?.stats?.forRent}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -658,7 +662,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          Villa, Land, Apartment
+                          {displayedBrokerProfile?.handled?.propertyTypes.join(", ")}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -669,7 +673,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          Bangalore, Ernakulam, Goa
+                          {displayedBrokerProfile?.handled?.serviceAreas.join(", ")}
                         </span>
                       </div>
                     </div>

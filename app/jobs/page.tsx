@@ -22,6 +22,14 @@ export default function JobsPage() {
   const [employmentType, setEmploymentType] = React.useState<
     EmploymentType | undefined
   >(undefined);
+  const [experience, setExperience] = React.useState<string | undefined>(
+    undefined,
+  );
+  const [salary, setSalary] = React.useState<string | undefined>(undefined);
+  const [education, setEducation] = React.useState<string | undefined>(
+    undefined,
+  );
+  const [jobLevel, setJobLevel] = React.useState<string | undefined>(undefined);
   const [userProfilePicture, setUserProfilePicture] = React.useState<
     string | null
   >(null);
@@ -36,6 +44,10 @@ export default function JobsPage() {
     search: search || undefined,
     city: city || undefined,
     employmentType: employmentType,
+    experience: experience,
+    salary: salary,
+    education: education,
+    jobLevel: jobLevel,
   });
 
   const totalPages = jobPosts?.data.pagination.pages || 1;
@@ -67,8 +79,16 @@ export default function JobsPage() {
       setEmploymentType(
         value === "all" ? undefined : (value as EmploymentType),
       );
-      setCurrentPage(1);
+    } else if (type === "Experience") {
+      setExperience(value === "all" ? undefined : value);
+    } else if (type === "Salary") {
+      setSalary(value === "all" ? undefined : value);
+    } else if (type === "Education") {
+      setEducation(value === "all" ? undefined : value);
+    } else if (type === "Job Level") {
+      setJobLevel(value === "all" ? undefined : value);
     }
+    setCurrentPage(1);
   };
 
   return (
@@ -115,23 +135,116 @@ export default function JobsPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3 w-full">
-            {(search || city || employmentType) && (
-              <button
-                onClick={() => {
-                  setSearch("");
-                  setCity("");
-                  setEmploymentType(undefined);
-                }}
-                className="px-4 py-1.5 rounded-full border border-slate-200 text-sm font-medium text-slate-600 hover:border-slate-300 flex items-center gap-2"
-              >
-                Clear Filters <span className="text-slate-400">×</span>
-              </button>
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 w-full flex-wrap">
+              {(search ||
+                city ||
+                employmentType ||
+                experience ||
+                salary ||
+                education ||
+                jobLevel) && (
+                <button
+                  onClick={() => {
+                    setSearch("");
+                    setCity("");
+                    setEmploymentType(undefined);
+                    setExperience(undefined);
+                    setSalary(undefined);
+                    setEducation(undefined);
+                    setJobLevel(undefined);
+                  }}
+                  className="px-4 py-1.5 rounded-full border border-red-200 bg-red-50 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors flex items-center gap-2"
+                >
+                  Clear All <span className="text-red-400">×</span>
+                </button>
+              )}
+              <span className="text-sm font-bold text-slate-900 ml-auto md:ml-0">
+                {totalResults} Results
+              </span>
+            </div>
+          </div>
+
+          {/* Active Filter Badges */}
+          <div className="flex flex-wrap gap-2">
+            {employmentType && (
+              <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full border border-blue-100 flex items-center gap-2">
+                Type: {employmentType.replace("_", " ")}
+                <button
+                  onClick={() => setEmploymentType(undefined)}
+                  className="hover:text-blue-800"
+                >
+                  ×
+                </button>
+              </span>
             )}
-            <span className="text-sm font-bold text-slate-900 ml-auto md:ml-0">
-              {totalResults} Results
-            </span>
+            {experience && (
+              <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-xs font-semibold rounded-full border border-emerald-100 flex items-center gap-2">
+                Exp: {experience}
+                <button
+                  onClick={() => setExperience(undefined)}
+                  className="hover:text-emerald-800"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {salary && (
+              <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-semibold rounded-full border border-amber-100 flex items-center gap-2">
+                Salary: {salary}
+                <button
+                  onClick={() => setSalary(undefined)}
+                  className="hover:text-amber-800"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {education && (
+              <span className="px-3 py-1 bg-purple-50 text-purple-600 text-xs font-semibold rounded-full border border-purple-100 flex items-center gap-2">
+                Edu: {education}
+                <button
+                  onClick={() => setEducation(undefined)}
+                  className="hover:text-purple-800"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {jobLevel && (
+              <span className="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-semibold rounded-full border border-indigo-100 flex items-center gap-2">
+                Level: {jobLevel}
+                <button
+                  onClick={() => setJobLevel(undefined)}
+                  className="hover:text-indigo-800"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {search && (
+              <span className="px-3 py-1 bg-slate-50 text-slate-600 text-xs font-semibold rounded-full border border-slate-100 flex items-center gap-2">
+                Search: {search}
+                <button
+                  onClick={() => setSearch("")}
+                  className="hover:text-slate-800"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {city && (
+              <span className="px-3 py-1 bg-slate-50 text-slate-600 text-xs font-semibold rounded-full border border-slate-100 flex items-center gap-2">
+                City: {city}
+                <button
+                  onClick={() => setCity("")}
+                  className="hover:text-slate-800"
+                >
+                  ×
+                </button>
+              </span>
+            )}
           </div>
         </div>
 
@@ -208,7 +321,16 @@ export default function JobsPage() {
 
           {/* Sidebar Filters - Hidden on mobile, visible on desktop */}
           <div className="hidden lg:block">
-            <JobFilterSidebar onChange={handleFilterChange} />
+            <JobFilterSidebar
+              onChange={handleFilterChange}
+              filters={{
+                employmentType,
+                experience,
+                salary,
+                education,
+                jobLevel,
+              }}
+            />
           </div>
         </div>
       </div>

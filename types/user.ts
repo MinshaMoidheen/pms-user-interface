@@ -1,7 +1,7 @@
 export interface IUser {
   _id: string;
   mobileNumber?: string; // Optional for social auth users
-  role: 'SUPER_ADMIN' | 'BROKER' | 'USER';
+  role: "SUPER_ADMIN" | "BROKER" | "USER";
   isMobileVerified: boolean;
   isActive: boolean; // Account status (active/inactive)
   createdBy?: string; // User who created (for admin-created users)
@@ -15,6 +15,10 @@ export interface IUser {
     firstName?: string;
     lastName?: string;
     profilePicture?: string;
+    bio?: string;
+    isVerified?: boolean;
+    serviceAreas?: string[]; // e.g. ["Bangalore", "Goa"]
+    specialties?: string[]; // e.g. ["Villa", "Apartment"]
     // Job application profile fields
     cv?: string; // URL to CV file
     resume?: string; // URL to resume file
@@ -56,6 +60,31 @@ export interface getProfileResponse {
   success: boolean;
   message: string;
   data: {
-    user:IUser;
+    user: IUser;
+  };
+}
+
+export interface getBrokerProfileResponse {
+  success: boolean;
+  message: string;
+  data: {
+    agent: {
+      id: string;
+      name: string;
+      profilePicture: string;
+      isVerified: boolean;
+      bio: string;
+      experience: number;
+      rating: number;
+      reviewCount: number;
+    };
+    stats: {
+      forSale: number;
+      forRent: number;
+    };
+    handled: {
+      propertyTypes: string[];
+      serviceAreas: string[];
+    };
   };
 }

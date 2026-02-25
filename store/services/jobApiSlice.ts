@@ -9,12 +9,17 @@ import type {
   getMyApplicationsResponse,
   applyJobRequest,
   toggleBookmarkResponse,
+  getSimilarJobsResponse,
 } from "@/types/jobs";
 
 export interface GetJobsParams {
   city?: string;
   state?: string;
   employmentType?: EmploymentType;
+  experience?: string;
+  salary?: string;
+  education?: string;
+  jobLevel?: string;
   search?: string;
   page?: number;
   limit?: number;
@@ -25,7 +30,18 @@ const jobApiSlice = apiSlice.injectEndpoints({
     getJobPosts: builder.query<getJobPostsResponse, GetJobsParams | void>({
       query: (params) => {
         const p: GetJobsParams = params ?? {};
-        const { city, state, employmentType, search, page = 1, limit = 10 } = p;
+        const {
+          city,
+          state,
+          employmentType,
+          experience,
+          salary,
+          education,
+          jobLevel,
+          search,
+          page = 1,
+          limit = 10,
+        } = p;
         return {
           url: `${JOBS_URL}`,
           method: "GET",
@@ -33,6 +49,10 @@ const jobApiSlice = apiSlice.injectEndpoints({
             city,
             state,
             employmentType,
+            experience,
+            salary,
+            education,
+            jobLevel,
             search,
             page,
             limit,
@@ -105,6 +125,12 @@ const jobApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (result, error, id) => [{ type: "Jobs", id }],
     }),
+
+    getSimilarJobs: builder.query<getSimilarJobsResponse, string | undefined>({
+      query: (id) => ({ url: `${JOBS_URL}/${id}/similar` }),
+      providesTags: (result, error, id) => [{ type: "Jobs", id }],
+    }),
+
   }),
 });
 
@@ -114,4 +140,5 @@ export const {
   useApplyJobMutation,
   useGetMyApplicationsQuery,
   useToggleJobBookmarkMutation,
+  useGetSimilarJobsQuery,
 } = jobApiSlice;

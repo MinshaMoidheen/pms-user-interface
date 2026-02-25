@@ -8,6 +8,7 @@ interface FilterGroupProps {
   options: { label: string; count?: number; value: string }[];
   type?: "checkbox" | "radio";
   onChange?: (type: string, value: string) => void;
+  selectedValue?: string;
 }
 
 const FilterGroup: React.FC<FilterGroupProps> = ({
@@ -15,6 +16,7 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
   options,
   type = "checkbox",
   onChange,
+  selectedValue,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -40,6 +42,7 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
                 type={type}
                 name={title}
                 value={option.value}
+                checked={selectedValue === option.value}
                 onChange={(e) => onChange?.(title, e.target.value)}
                 className="w-4 h-4 border-slate-300 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
               />
@@ -61,9 +64,19 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
 
 interface JobFilterSidebarProps {
   onChange?: (type: string, value: string) => void;
+  filters?: {
+    employmentType?: string;
+    experience?: string;
+    salary?: string;
+    education?: string;
+    jobLevel?: string;
+  };
 }
 
-const JobFilterSidebar: React.FC<JobFilterSidebarProps> = ({ onChange }) => {
+const JobFilterSidebar: React.FC<JobFilterSidebarProps> = ({
+  onChange,
+  filters,
+}) => {
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-100">
       {/* Row 1: Experience and Salary */}
@@ -82,6 +95,7 @@ const JobFilterSidebar: React.FC<JobFilterSidebarProps> = ({ onChange }) => {
           ]}
           type="radio"
           onChange={onChange}
+          selectedValue={filters?.experience}
         />
 
         <FilterGroup
@@ -97,6 +111,7 @@ const JobFilterSidebar: React.FC<JobFilterSidebarProps> = ({ onChange }) => {
           ]}
           type="radio"
           onChange={onChange}
+          selectedValue={filters?.salary}
         />
       </div>
 
@@ -114,6 +129,7 @@ const JobFilterSidebar: React.FC<JobFilterSidebarProps> = ({ onChange }) => {
             { label: "Contract Base", value: "CONTRACT" },
           ]}
           onChange={onChange}
+          selectedValue={filters?.employmentType || "all"}
         />
 
         <FilterGroup
@@ -128,6 +144,7 @@ const JobFilterSidebar: React.FC<JobFilterSidebarProps> = ({ onChange }) => {
             { label: "PhD", value: "phd" },
           ]}
           onChange={onChange}
+          selectedValue={filters?.education || "all"}
         />
       </div>
 
@@ -143,6 +160,7 @@ const JobFilterSidebar: React.FC<JobFilterSidebarProps> = ({ onChange }) => {
             ]}
             type="radio"
             onChange={onChange}
+            selectedValue={filters?.jobLevel}
           />
         </div>
         {/* Empty div for layout balance on desktop */}

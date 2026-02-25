@@ -24,12 +24,6 @@ const App: React.FC = () => {
          <div className="order-5 md:order-4">
         <StaysSection city="Bangalore" />
         <StaysSection city="Kochi" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex justify-center">
-            <button className="bg-[#FF5A3C] text-white px-8 py-3 rounded-full font-bold hover:bg-orange-600 transition-colors">
-                Load More
-            </button>
-        </div>
         </div>
          <div className="order-4 md:order-5">
         <CTASection />

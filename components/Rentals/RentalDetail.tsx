@@ -15,15 +15,6 @@ import {
   Calendar,
   Star,
   Bookmark,
-  Wifi,
-  Laptop,
-  Wind,
-  Monitor,
-  ShieldCheck,
-  ParkingCircle,
-  Dumbbell,
-  Droplets,
-  Trophy,
   Ruler,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -32,10 +23,7 @@ import {
   useGetSimilarPropertiesQuery,
   useToggleBookmarkMutation,
 } from "@/store/services/propertiesApiSlice";
-import Header from "../Common/Header";
-import Link from "next/link";
-import Footer from "../Common/Footer";
-import FeaturedProperties from "../Landing-page/FeaturedProperties";
+import { useGetBrokerProfileQuery } from "@/store/services/usersApiSlice";
 import ReviewsSection from "../Common/ReviewsSection";
 import { IProperty } from "@/types/properties";
 import { getFlexibleField } from "@/utility/propertyUtils";
@@ -61,6 +49,15 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
   );
 
   const similarPropertiesList = similarProperties?.data?.properties;
+
+  const { data: brokerProfile } = useGetBrokerProfileQuery(
+    displayedProperty?.postedBy?._id,
+    {
+      skip: !displayedProperty?.postedBy?._id,
+    },
+  );
+
+  const displayedBrokerProfile = brokerProfile?.data;
 
   const [showMore, setShowMore] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -197,7 +194,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                   ₹{displayedProperty.price.toLocaleString()}
                 </span>
                 <span className="text-sm text-gray-500 font-medium whitespace-nowrap">
-                  {displayedProperty.priceUnit}
+                  /{displayedProperty.priceUnit}
                 </span>
               </div>
 
@@ -581,7 +578,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                   <div className="grid grid-cols-2 w-full mb-8 relative">
                     <div className="flex flex-col items-end pr-6 border-r border-[#FED7AA]/30">
                       <span className="text-2xl font-bold text-[#1E293B]">
-                        4.5
+                        {displayedBrokerProfile?.agent?.rating}
                       </span>
                       <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
@@ -589,7 +586,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                             key={i}
                             size={14}
                             className={
-                              i < 4
+                              i < (displayedBrokerProfile?.agent?.rating || 0)
                                 ? "fill-orange-400 text-orange-400"
                                 : "fill-orange-400/50 text-orange-400/50"
                             }
@@ -599,7 +596,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                     </div>
                     <div className="flex flex-col items-start pl-6">
                       <span className="text-2xl font-bold text-[#1E293B]">
-                        25
+                       {displayedBrokerProfile?.agent?.reviewCount}
                       </span>
                       <span className="text-sm font-medium text-gray-500">
                         Reviews
@@ -621,16 +618,10 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                 <div className="flex-1 space-y-6 md:space-y-10 pt-2 w-full">
                   <div>
                     <h4 className="text-xl md:text-2xl font-bold text-[#1E293B] mb-4 text-center md:text-left">
-                      About {displayedProperty.contact.name}
+                      About {displayedBrokerProfile?.agent?.name}
                     </h4>
                     <p className="text-[#64748B] leading-relaxed font-medium text-sm md:text-base text-center md:text-left">
-                      {displayedProperty.contact.name} is a verified real estate
-                      agent known for closing high value deals and matching
-                      clients with the right properties faster than the market
-                      average. With 8+ years in real estate, he has helped 300+
-                      families find homes and assisted numerous owners in
-                      selling and renting their properties at competitive
-                      prices.
+                      {displayedBrokerProfile?.agent?.bio}
                     </p>
                   </div>
 
@@ -647,7 +638,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          12
+                          {displayedBrokerProfile?.stats?.forSale}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -658,7 +649,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          4
+                          {displayedBrokerProfile?.stats?.forRent}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -669,7 +660,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          Villa, Land, Apartment
+                          {displayedBrokerProfile?.handled?.propertyTypes.join(", ")}
                         </span>
                       </div>
                       <div className="flex justify-between md:grid md:grid-cols-[140px_20px_1fr] items-center border-b md:border-b-0 pb-2 md:pb-0 border-gray-50">
@@ -680,7 +671,7 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
                           :
                         </span>
                         <span className="text-[#1E293B] font-bold text-sm md:text-base">
-                          Bangalore, Ernakulam, Goa
+                          {displayedBrokerProfile?.handled?.serviceAreas.join(", ")}
                         </span>
                       </div>
                     </div>
@@ -755,73 +746,73 @@ const RentalDetail: React.FC<RentalDetailProps> = () => {
               similarPropertiesList?.slice(0, 4).map((sale) => (
                 <div
                   key={sale._id}
-                onClick={() => router.push(`/rentals/${sale._id}`)}
-                className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
-              >
-                <div className="relative aspect-4/3 overflow-hidden">
-                  <img
-                    src={sale.images[0]}
-                    alt={sale.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <span className="bg-[#22C55E] text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shadow-sm">
-                      Popular
-                    </span>
-                  </div>
-                  <button className="absolute top-3 right-3 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all border border-white/20">
-                    <Bookmark size={16} />
-                  </button>
-                </div>
-                <div className="p-4 space-y-2">
-                  <h4 className="font-bold text-sm text-gray-900 line-clamp-1">
-                    {sale.title}
-                  </h4>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-black text-[#FF5A3D]">
-                      ₹{sale.price.toLocaleString()}
-                    </span>
-                  </div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    {sale.flexibleFields?.propertyType}
-                  </p>
-                  <div className="flex items-center gap-4 py-2 border-y border-gray-50">
-                    <div className="flex items-center gap-1.5">
-                      <BedDouble size={14} className="text-gray-400" />
-                      <span className="text-[10px] font-bold">
-                        {sale.flexibleFields?.bedrooms} Bedrooms
+                  onClick={() => router.push(`/rentals/${sale._id}`)}
+                  className="group relative block overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[#FF5A3D]/5 transition-all duration-300 cursor-pointer"
+                >
+                  <div className="relative aspect-4/3 overflow-hidden">
+                    <img
+                      src={sale.images[0]}
+                      alt={sale.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <span className="bg-[#22C55E] text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shadow-sm">
+                        Popular
                       </span>
                     </div>
-                    <div className="flex items-center gap-1.5 border-l pl-4 border-gray-100">
-                      <Ruler size={14} className="text-gray-400 rotate-90" />
-                      <span className="text-[10px] font-bold">
-                        {sale.area?.value} {sale?.area?.unit}
+                    <button className="absolute top-3 right-3 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all border border-white/20">
+                      <Bookmark size={16} />
+                    </button>
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-bold text-sm text-gray-900 line-clamp-1">
+                      {sale.title}
+                    </h4>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-lg font-black text-[#FF5A3D]">
+                        ₹{sale.price.toLocaleString()}
                       </span>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          size={14}
-                          className={`${
-                            sale.averageRating >= star
-                              ? "fill-orange-400 text-orange-400"
-                              : "text-gray-300"
-                          }`}
-                        />
-                      ))}
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                      {sale.flexibleFields?.propertyType}
+                    </p>
+                    <div className="flex items-center gap-4 py-2 border-y border-gray-50">
+                      <div className="flex items-center gap-1.5">
+                        <BedDouble size={14} className="text-gray-400" />
+                        <span className="text-[10px] font-bold">
+                          {sale.flexibleFields?.bedrooms} Bedrooms
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 border-l pl-4 border-gray-100">
+                        <Ruler size={14} className="text-gray-400 rotate-90" />
+                        <span className="text-[10px] font-bold">
+                          {sale.area?.value} {sale?.area?.unit}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            size={14}
+                            className={`${
+                              sale.averageRating >= star
+                                ? "fill-orange-400 text-orange-400"
+                                : "text-gray-300"
+                            }`}
+                          />
+                        ))}
 
-                      <span className="text-[10px] font-black ml-1">
-                        ({sale.reviewCount})
-                      </span>
+                        <span className="text-[10px] font-black ml-1">
+                          ({sale.reviewCount})
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ),
-          ))}
+              ))
+            )}
           </div>
         </div>
       </main>

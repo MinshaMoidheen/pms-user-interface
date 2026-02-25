@@ -1,3 +1,5 @@
+import { IUser } from "./user";
+
 export type PropertyType = "SALE" | "RENT";
 export type PropertyCategory =
   | "HOUSE_VILLA"
@@ -52,7 +54,7 @@ export interface IProperty {
     email?: string;
     whatsappNumber: string;
   };
-  postedBy: string; // User who posted
+  postedBy: IUser; // User who posted
   createdBy: string; // User who created
   updatedBy?: string; // User who last updated
   isDeleted: {

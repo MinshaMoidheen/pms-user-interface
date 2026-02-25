@@ -1,16 +1,14 @@
-export type EmploymentType =
-  | "FULL_TIME"
-  | "PART_TIME"
-  | "CONTRACT"
-  | "FREELANCE"
-  | "INTERNSHIP";
+export type EmploymentType = 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'FREELANCE' | 'INTERNSHIP' | 'REMOTE' | 'TEMPORARY' | 'CONTRACT_BASE';
 
 export interface IJobPost {
   _id: string;
-  title: string;
+ title: string;
   description: string;
   companyName: string;
   employmentType: EmploymentType;
+  experience?: string;
+  education?: string;
+  jobLevel?: string;
   location: {
     city: string;
     state: string;
@@ -37,8 +35,8 @@ export interface IJobPost {
   applicants: string[]; // Array of user IDs who applied
   applicationCount: number;
   bookmarks: string[]; // Array of user IDs who bookmarked
-  averageRating: number; // Cached average rating (1-5)
-  reviewCount: number; // Cached total review count
+  averageRating: number;   // Cached average rating (1-5)
+  reviewCount: number;     // Cached total review count
   isDeleted: {
     status: boolean;
     deletedBy?: string;
@@ -70,6 +68,15 @@ export interface getJobPostByIdResponse {
     job: IJobPost;
   };
 }
+
+export interface getSimilarJobsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    jobs: IJobPost[];
+  };
+}
+
 
 // Applications
 

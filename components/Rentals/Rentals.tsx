@@ -290,7 +290,7 @@ const Rentals = () => {
               viewMode === "list" ? "hidden lg:block" : "block"
             }`}
           >
-            <MapView />
+            <MapView properties={PROPERTIES} />
           </div>
         </div>
 

@@ -2,20 +2,23 @@
 
 import React, { useState, useRef } from 'react';
 import { Home, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const categories = [
-  { image: '/images/propertysale.png', label: 'Property For Sale' },
-  { image: '/images/propertyrent.png', label: 'Property For Rent' },
-  { image: '/images/jobs.png', label: 'Jobs' },
-  { image: '/images/project.png', label: 'Project' },
-  { image: '/images/community.png', label: 'Community' },
-  { image: '/images/investment.png', label: 'Investment' },
+  { image: '/images/propertysale.png', label: 'Property For Sale', link: '/for-sale' },
+  { image: '/images/propertyrent.png', label: 'Property For Rent', link: '/rentals' },
+  { image: '/images/jobs.png', label: 'Jobs', link: '/jobs' },
+  { image: '/images/project.png', label: 'Project', link: '/project' },
+  { image: '/images/community.png', label: 'Community', link: '/community' },
+  { image: '/images/investment.png', label: 'Investment', link: '/investment' },
 ];
 
 const Hero: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const router = useRouter();
 
   const focusInput = () => {
     if (inputRef.current) {
@@ -85,6 +88,7 @@ const Hero: React.FC = () => {
             <div
               key={i}
               className="flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 bg-white rounded-xl sm:rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer"
+              onClick={() => router.push(cat.link)}
             >
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-2 sm:mb-3 md:mb-4 rounded-xl sm:rounded-2xl overflow-hidden">
                 <img

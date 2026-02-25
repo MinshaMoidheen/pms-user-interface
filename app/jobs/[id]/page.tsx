@@ -15,6 +15,7 @@ import {
   Linkedin,
   Home,
   Bookmark,
+  ChevronRight,
 } from "lucide-react";
 import Header from "@/components/Common/Header";
 import Footer from "@/components/Common/Footer";
@@ -22,7 +23,19 @@ import ApplyJobModal from "@/components/Jobs/ApplyJobModal";
 import {
   useGetJobByIdQuery,
   useToggleJobBookmarkMutation,
+  useGetSimilarJobsQuery,
 } from "@/store/services/jobApiSlice";
+
+const getTimeRemaining = (expiresAt: string | Date) => {
+  const diff = new Date(expiresAt).getTime() - new Date().getTime();
+  if (diff <= 0) return "Expired";
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+
+  if (days > 0) return `${days} days ${hours} hours`;
+  return `${hours} hours`;
+};
 
 export default function JobDetailsPage() {
   const params = useParams();
@@ -31,6 +44,8 @@ export default function JobDetailsPage() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [toggleBookmark] = useToggleJobBookmarkMutation();
   const [userId, setUserId] = useState<string | null>(null);
+  const [similarJobsPage, setSimilarJobsPage] = useState(1);
+  const SIMILAR_JOBS_PER_PAGE = 6;
 
   useEffect(() => {
     const userJson = localStorage.getItem("user");
@@ -55,11 +70,19 @@ export default function JobDetailsPage() {
   }, [id, toggleBookmark, router]);
 
   const { data: jobResponse, isLoading, error } = useGetJobByIdQuery(id);
+  const { data: similarJobsResponse, isLoading: isLoadingSimilar } =
+    useGetSimilarJobsQuery(id);
 
   const job = jobResponse?.data.job;
+  const similarJobs = similarJobsResponse?.data.jobs || [];
 
-  // Related jobs logic should probably be based on company or type, but for now we keep it simple
-  // or use a separate query if available.
+  const totalSimilarPages = Math.ceil(
+    similarJobs.length / SIMILAR_JOBS_PER_PAGE,
+  );
+  const paginatedSimilarJobs = similarJobs.slice(
+    (similarJobsPage - 1) * SIMILAR_JOBS_PER_PAGE,
+    similarJobsPage * SIMILAR_JOBS_PER_PAGE,
+  );
 
   if (isLoading) {
     return (
@@ -101,7 +124,6 @@ export default function JobDetailsPage() {
   return (
     <div className="min-h-screen bg-white font-sans">
       <Header />
-
       <main className="pt-24 pb-12 px-4 sm:px-6 max-w-7xl mx-auto">
         {/* Breadcrumb & Navigation */}
         <div className="flex items-center justify-between mb-8 text-sm bg-slate-50 p-6">
@@ -195,12 +217,23 @@ export default function JobDetailsPage() {
                   }`}
                 />
               </button>
-              <button
-                onClick={handleApplyClick}
-                className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 w-full sm:w-auto disabled:opacity-50"
-              >
-                Apply Now
-              </button>
+              <div className="flex flex-col gap-2 w-full sm:w-auto">
+                {job.expiresAt && (
+                  <div className="text-sm font-medium text-slate-500 flex items-center gap-2 mb-1">
+                    <Clock className="w-4 h-4 text-orange-500" />
+                    Job expire in :{" "}
+                    <span className="text-orange-600">
+                      {getTimeRemaining(job.expiresAt)}
+                    </span>
+                  </div>
+                )}
+                <button
+                  onClick={handleApplyClick}
+                  className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 w-full sm:w-auto disabled:opacity-50"
+                >
+                  Apply Now
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -285,7 +318,7 @@ export default function JobDetailsPage() {
                 Job Overview
               </h3>
 
-              <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+              <div className="grid grid-cols-3 gap-y-6 gap-x-4">
                 <OverviewItem
                   icon={<Calendar />}
                   label="Job Posted"
@@ -293,7 +326,7 @@ export default function JobDetailsPage() {
                 />
                 <OverviewItem
                   icon={<Clock />}
-                  label="Expires In"
+                  label="Job expire In"
                   value={
                     job.expiresAt
                       ? new Date(job.expiresAt).toLocaleDateString()
@@ -302,9 +335,10 @@ export default function JobDetailsPage() {
                 />
                 <OverviewItem
                   icon={<Briefcase />}
-                  label="Job Type"
-                  value={job.employmentType}
+                  label="Education"
+                  value={job.education ? job.education : "Not Specified"}
                 />
+
                 <OverviewItem
                   icon={<DollarSign />}
                   label="Salary"
@@ -319,13 +353,22 @@ export default function JobDetailsPage() {
                   label="Location"
                   value={job.location.city}
                 />
-                <div className="col-span-2">
-                  <OverviewItem
-                    icon={<Briefcase />}
-                    label="Applications"
-                    value={`${job.applicationCount} Applicants`}
-                  />
-                </div>
+                <OverviewItem
+                  icon={<Briefcase />}
+                  label="Job Type"
+                  value={job.employmentType}
+                />
+
+                <OverviewItem
+                  icon={<Briefcase />}
+                  label="Experience"
+                  value={job.experience ? job.experience : "Not Specified"}
+                />
+                <OverviewItem
+                  icon={<Briefcase />}
+                  label="Applications"
+                  value={`${job.applicationCount} Applicants`}
+                />
               </div>
             </div>
 
@@ -370,10 +413,108 @@ export default function JobDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Related Jobs Section */}
+        {similarJobs.length > 0 && (
+          <section className="mt-20">
+            <h2 className="text-3xl font-bold text-slate-900 mb-8">
+              Related Jobs
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedSimilarJobs.map((similarJob) => (
+                <div
+                  key={similarJob._id}
+                  onClick={() => router.push(`/jobs/${similarJob._id}`)}
+                  className="bg-white p-6 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow cursor-pointer flex flex-col group h-full"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      {/* Company Logo/Icon */}
+                      <div className="w-12 h-12 rounded-xl bg-pink-500 flex items-center justify-center text-white p-2">
+                        {/* Mockup shows a generic pink icon, using a sphere-like lucide icon or company initial */}
+                        <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900">
+                          {similarJob.companyName}
+                        </h4>
+                        <div className="flex items-center gap-1 text-xs text-slate-400">
+                          <MapPin className="w-3 h-3" />
+                          {similarJob.location.city}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h3 className="text-lg font-bold text-slate-900 mb-4 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    {similarJob.title}.
+                  </h3>
+
+                  <div className="mt-auto flex items-center gap-3">
+                    <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-lg">
+                      {similarJob.employmentType
+                        .toLowerCase()
+                        .replace("_", "-")
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    </span>
+                    <span className="text-xs font-bold text-slate-400">
+                      {similarJob.salary
+                        ? `₹${similarJob.salary.min / 1000}k-₹${similarJob.salary.max / 1000}k/month`
+                        : "Salary Not Disclosed"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Related Jobs Pagination */}
+            {totalSimilarPages > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-12 pb-8">
+                <button
+                  onClick={() =>
+                    setSimilarJobsPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={similarJobsPage === 1}
+                  className="p-3 rounded-full bg-white border border-slate-100 text-slate-400 hover:text-blue-600 disabled:opacity-30 transition-all shadow-sm"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: totalSimilarPages }).map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSimilarJobsPage(idx + 1)}
+                      className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-bold transition-all ${
+                        similarJobsPage === idx + 1
+                          ? "bg-blue-700 text-white shadow-lg shadow-blue-200"
+                          : "text-slate-400 hover:bg-slate-50"
+                      }`}
+                    >
+                      {(idx + 1).toString().padStart(2, "0")}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() =>
+                    setSimilarJobsPage((prev) =>
+                      Math.min(prev + 1, totalSimilarPages),
+                    )
+                  }
+                  disabled={similarJobsPage === totalSimilarPages}
+                  className="p-3 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-30 transition-all shadow-sm"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+          </section>
+        )}
       </main>
-
       <Footer />
-
       <ApplyJobModal
         job={job}
         isOpen={isApplyModalOpen}
